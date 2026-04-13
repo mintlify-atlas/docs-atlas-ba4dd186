@@ -1,0 +1,160 @@
+---
+title: "Gameplay and AI settings in TM:PE"
+description: "Configure simulation accuracy, Advanced Vehicle AI, Dynamic Lane Selection, Parking AI, path-finding, and priority rules for realistic traffic."
+---
+
+The Gameplay tab and the General tab's Simulation group let you tune how accurately TM:PE models traffic, how intelligently vehicles choose routes and lanes, and how citizens find parking. Most of these options are saved per-city. Enabling higher accuracy or additional AI systems improves realism but increases CPU usage — start with the defaults and raise settings incrementally on larger cities.
+
+<Warning>
+All settings on this page (except "Allow buses/taxis in Old Town districts") are per-city. Open your savegame before changing them; the options panel will show a warning if no city is loaded.
+</Warning>
+
+<AccordionGroup>
+
+  <Accordion title="Simulation accuracy">
+    Found on the **General** tab under the **Simulation** group.
+
+    The **Simulation accuracy** dropdown controls how thoroughly TM:PE evaluates traffic rules every simulation step. Higher accuracy means more correct behaviour at junctions, priority signs, and traffic lights, at the cost of additional CPU time.
+
+    | Value | Description |
+    |---|---|
+    | **Very Low** | Minimal rule evaluation. Fastest performance, least realistic. |
+    | **Low** | Reduced checks. Suitable for very large or slow machines. |
+    | **Medium** | Balanced default for most cities. |
+    | **High** | More thorough evaluation. Recommended for modern hardware. |
+    | **Very High** | Maximum accuracy. Default setting. Best realism; noticeable impact on large maps. |
+
+    <Tip>
+    If your city has more than 100 000 citizens and you notice frame-rate drops, try lowering simulation accuracy to **High** or **Medium** before disabling other AI features.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Vehicle behaviour">
+    Found on the **Gameplay** tab under the **Vehicle behavior** group.
+
+    | Option | Default | Description |
+    |---|---|---|
+    | **Reckless drivers %** | Holy City (none) | Sets the proportion of vehicles that ignore traffic rules. Options: *Holy City* (0 %), *Minor Complaints* (~2 %), *Rush Hour* (~5 %), *Path of Evil* (~10 %). |
+    | **Individual driving styles** | On | Gives each vehicle a slightly different speed and lane-preference profile, making traffic look less uniform. |
+    | **Increase road condition impact** | Off | Amplifies the speed penalty from wet or snowy roads. Requires the **Snowfall** DLC. |
+    | **Disable despawning** | Off | Prevents vehicles from being removed when they get stuck. You can filter which vehicle types are protected using the **Filter** button that appears when this is enabled. |
+  </Accordion>
+
+  <Accordion title="Advanced Vehicle AI">
+    Found on the **Gameplay** tab under the **Advanced vehicle AI** group.
+
+    Enable **Advanced Vehicle AI** to allow vehicles to react to current traffic conditions rather than following pre-calculated paths blindly. When enabled, the **Dynamic Lane Selection** slider becomes active.
+
+    The underlying cost factors (stored in `TMPE_GlobalConfig.xml`) control how the AI weighs lane changes and traffic density:
+
+    | Parameter | Default | Description |
+    |---|---|---|
+    | `LaneRandomizationJunctionSel` | 3 | How often the AI randomises lane choice at junctions, adding natural variation. |
+    | `LaneRandomizationCostFactor` | 1.0 | Multiplier applied to the randomisation cost. |
+    | `LaneChangingBaseMinCost` | 1.1 | Minimum path cost added for a single lane change. |
+    | `LaneChangingBaseMaxCost` | 1.5 | Maximum path cost added for a single lane change. |
+    | `LaneChangingJunctionBaseCost` | 2.0 | Extra cost for changing lanes close to a junction. |
+    | `JunctionBaseCost` | 0.1 | Base cost for traversing any junction. |
+    | `MoreThanOneLaneChangingCostFactor` | 2.0 | Multiplier applied when a vehicle needs to change more than one lane. |
+    | `TrafficCostFactor` | 4.0 | Weight given to current lane traffic density in route cost. Higher values make vehicles avoid congested lanes more aggressively. |
+    | `LaneDensityRandInterval` | 20 | Random variation added to lane density readings, preventing all vehicles from simultaneously switching to the same lane. |
+    | `MaxTrafficBuffer` | 10 | Maximum traffic buffer value before it is reset to prevent stale data. |
+
+    <Note>
+    These parameters are advanced tuning values. Edit them in `TMPE_GlobalConfig.xml` only if you understand the implications. Incorrect values can cause vehicles to behave erratically or never change lanes.
+    </Note>
+  </Accordion>
+
+  <Accordion title="Dynamic Lane Selection (DLS)">
+    Found on the **Gameplay** tab. DLS becomes available once **Advanced Vehicle AI** is enabled.
+
+    The **Dynamic lane selection** slider (0–100 %) sets the percentage of vehicles that actively reconsider their lane in real time while driving. At 0 % DLS is off even if Advanced AI is enabled. At 100 % every vehicle re-evaluates its lane at every eligible opportunity.
+
+    The global config contains the boundary values that define the safe/unsafe thresholds used by DLS:
+
+    | Parameter | Default | Description |
+    |---|---|---|
+    | `MaxReservedSpace` | 0.5 | Maximum reserved space on the preceding vehicle's lane before a regular driver considers changing. Lower = more willing to change (egoistic). |
+    | `MaxRecklessReservedSpace` | 10.0 | Same threshold for reckless drivers. |
+    | `LaneSpeedRandInterval` | 5 km/h | Random noise added to perceived lane speed. Higher = drivers overestimate how slow adjacent lanes are (egoistic). |
+    | `MaxOptLaneChanges` | 2 | Maximum number of lane changes a vehicle will consider in one decision cycle. |
+    | `MaxUnsafeSpeedDiff` | 0.4 | Maximum speed difference (game units) at which an unsafe lane change is still permitted. |
+    | `MinSafeSpeedImprovement` | 25 km/h | Minimum speed gain required before a vehicle will make a safe lane change. Higher = vehicles only move when there is a meaningful benefit (altruistic). |
+    | `MinSafeTrafficImprovement` | 20 % | Minimum traffic flow improvement required before a vehicle will make a safe lane change. |
+    | `VolumeMeasurementRelSpeedThreshold` | 50 % | Minimum relative speed (as a percentage of the speed limit) at which lane volume is measured. |
+
+    <Tip>
+    Raising `MinSafeSpeedImprovement` and `MinSafeTrafficImprovement` makes drivers more patient and reduces unnecessary weaving. Lowering them makes drivers switch lanes more aggressively.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Parking AI">
+    Found on the **Gameplay** tab under the **Parking AI** group.
+
+    Enable **More realistic parking** to have citizens genuinely search for, drive to, and walk from parking spaces rather than spawning vehicles directly at their destination.
+
+    Advanced tuning parameters (in `TMPE_GlobalConfig.xml`):
+
+    | Parameter | Default | Description |
+    |---|---|---|
+    | `ParkingSpacePositionRand` | 32 | Randomises target position to allow parking on either side of the road. |
+    | `VicinityParkingSpaceSelectionRand` | 4 | Controls how often a citizen picks the nearest available space vs. a slightly farther one. Value of 1 always picks nearest; higher values introduce more variety. |
+    | `MaxParkingAttempts` | 10 | Maximum number of parking spots a citizen will try before giving up and using public transport. |
+    | `MaxParkedCarInstanceSwitchSqrDistance` | 6 | Maximum squared distance between a citizen and their parked car before the game turns the parked car into a moving vehicle. |
+    | `MaxBuildingToPedestrianLaneDistance` | 96 | Maximum distance (game units) from a building to a walkable lane for parking to be considered. |
+    | `MaxParkedCarDistanceToHome` | 256 | Maximum distance from home at which a citizen will accept walking back to their parked car. |
+    | `MaxParkedCarDistanceToBuilding` | 512 | Minimum distance from destination at which a citizen will bother driving rather than walking. |
+    | `PublicTransportDemandIncrement` | 10 | Demand increase when a path-find for public transport fails. |
+    | `PublicTransportDemandWaitingIncrement` | 3 | Demand increase when a citizen waits too long for public transport. |
+    | `PublicTransportDemandDecrement` | 1 | Demand decrease per simulation step (natural decay). |
+    | `PublicTransportDemandUsageDecrement` | 7 | Demand decrease when a citizen successfully uses public transport. |
+    | `ParkingSpaceDemandDecrement` | 1 | Parking demand decrease per simulation step. |
+    | `FailedParkingSpaceDemandIncrement` | 5 | Demand increase when no parking space is found while trying to park. |
+    | `FailedSpawnParkingSpaceDemandIncrement` | 10 | Demand increase when no parking space is found while trying to spawn a parked vehicle. |
+  </Accordion>
+
+  <Accordion title="Priority rules">
+    Priority rules configure how TM:PE enforces stop signs, yield signs, and priority junctions. These parameters are in `TMPE_GlobalConfig.xml` under `PriorityRules`.
+
+    | Parameter | Default | Description |
+    |---|---|---|
+    | `MaxPriorityCheckSqrDist` | 225 (= 15 m²) | Squared distance from a junction at which incoming vehicles start being evaluated against priority signs. |
+    | `MaxPriorityApproachTime` | 15 s | Maximum predicted time-to-junction for a vehicle to be considered as "approaching" and subject to priority checks. |
+    | `MaxPriorityWaitTime` | 100 ticks | Maximum number of simulation ticks a vehicle will wait at a priority sign before being allowed to proceed regardless. |
+    | `MaxYieldVelocity` | 2.5 | Maximum speed (game units) at which a vehicle is considered to have yielded. |
+    | `MaxStopVelocity` | 0.1 | Maximum speed (game units) at which a vehicle is considered to have fully stopped. |
+  </Accordion>
+
+  <Accordion title="Path-finding">
+    Path-finding parameters fine-tune how TM:PE routes vehicles and pedestrians. They are stored in `TMPE_GlobalConfig.xml` under `PathFinding`.
+
+    | Parameter | Default | Description |
+    |---|---|---|
+    | `PublicTransportLanePenalty` | 10.0 | Cost penalty applied when a bus travels outside a dedicated bus lane. |
+    | `PublicTransportLaneReward` | 0.1 | Cost reduction applied when a bus stays on a bus lane. |
+    | `HeavyVehicleMaxInnerLanePenalty` | 0.5 | Maximum penalty for trucks driving in an inner (left) lane instead of keeping right. |
+    | `HeavyVehicleInnerLanePenaltySegmentSel` | 3 | How frequently the inner-lane penalty is applied to heavy vehicles. |
+    | `IncompatibleLaneDistance` | 2 | Artificial lane-distance cost applied when a vehicle must enter a lane whose arrow configuration is incompatible with its route. |
+    | `UturnLaneDistance` | 2 | Artificial lane-distance cost applied to discourage U-turns. |
+    | `MaxWalkingDistance` | 2500 | Maximum distance (game units) a citizen will walk. |
+    | `PublicTransportTransitionMinPenalty` | 0.0 | Minimum cost for a citizen to board a public transport vehicle. |
+    | `PublicTransportTransitionMaxPenalty` | 100.0 | Maximum cost for a citizen to board a public transport vehicle, scaling with waiting time. |
+    | **Allow buses in Old Town districts** | Off | Lets buses enter districts with the Old Town policy active. Requires the **After Dark** DLC. |
+    | **Allow taxis in Old Town districts** | Off | Lets taxis enter districts with the Old Town policy active. Requires the **After Dark** DLC. |
+
+    <Note>
+    "Allow buses/taxis in Old Town districts" are global settings and apply to every city.
+    </Note>
+  </Accordion>
+
+  <Accordion title="Public transport">
+    Found on the **Gameplay** tab under the **Public transport** group.
+
+    | Option | Default | Description |
+    |---|---|---|
+    | **No excessive transfers** | Off | Prevents citizens from using unrealistically long chains of public transport connections just to reach a destination slightly faster. |
+    | **Allow buses in Old Town districts** | Off | See Path-finding above. Requires After Dark DLC. |
+    | **Allow taxis in Old Town districts** | Off | See Path-finding above. Requires After Dark DLC. |
+  </Accordion>
+
+</AccordionGroup>

@@ -1,0 +1,56 @@
+---
+title: "TM:PE compatibility with other mods"
+description: "TM:PE targets Cities: Skylines v1.21.1-f5 and includes a built-in panel to detect known incompatible mods before they cause problems."
+---
+
+TM:PE is tested against a specific version of Cities: Skylines and a curated set of companion mods. Running it alongside untested, outdated, or malicious mods can cause instability, corrupted save files, or silent simulation errors. This page explains which game version TM:PE targets, how the built-in incompatibility detection works, and which mods you should avoid entirely.
+
+## Supported game version
+
+TM:PE is developed and tested against **Cities: Skylines v1.21.1-f5**. Each TM:PE release is updated to track the latest game patch, so both the game and TM:PE should always be kept up to date.
+
+<Tip>
+  Steam handles updates for both the game and the Workshop version of TM:PE automatically. Check that automatic updates are enabled in your Steam settings so you always run the latest compatible versions.
+</Tip>
+
+<Warning>
+  Pirated or otherwise modified copies of Cities: Skylines are not supported. TM:PE performs internal version checks; if the game version does not match an expected value, the mod may refuse to load or behave unpredictably.
+</Warning>
+
+## Built-in incompatible mods panel
+
+TM:PE includes an **Incompatible Mods Panel** (`IncompatibleModsPanel.cs`) that runs at load time and checks your active mod list against a database of known problematic mods. If the panel detects a conflict, it displays a warning with the names of the offending mods before you load a city.
+
+When you see this warning, you should:
+
+1. Open **Content Manager → Mods**.
+2. Disable or unsubscribe from each mod listed in the warning.
+3. Restart the game and load your city.
+
+<Note>
+  The incompatible mods list is updated with each TM:PE release. Keeping TM:PE up to date ensures the panel knows about newly discovered conflicts.
+</Note>
+
+## Mods to avoid
+
+### Holy Water mods
+
+Do **not** use any mod published by the Steam Workshop account known as "Holy Water." These mods have been confirmed to contain malware that specifically targets TM:PE users and the mod's development team. TM:PE will not provide support to users who have any Holy Water mod installed, and you should unsubscribe from and delete those mods immediately.
+
+For background, see the [official notice on the TM:PE Steam Workshop page](https://steamcommunity.com/workshop/filedetails/discussion/1637663252/4731597528356140067/).
+
+<Warning>
+  Holy Water mods are a security risk. Remove them from your game regardless of whether you use TM:PE.
+</Warning>
+
+### Other outdated or abandoned mods
+
+Mods that have not been updated for a recent game version can patch the same game methods as TM:PE, leading to crashes or incorrect simulation behavior. If the Incompatible Mods Panel does not flag a specific mod but you experience issues, disable recently added mods one at a time to isolate the conflict.
+
+## Recommended companion mod
+
+The [Broken Node Detector](https://steamcommunity.com/sharedfiles/filedetails/?id=1777173984) is a companion mod recommended by the TM:PE team. It identifies broken road nodes that cause vehicles to despawn — a known Cities: Skylines engine bug that is separate from TM:PE but often reported alongside it. If you notice traffic disappearing unexpectedly, run Broken Node Detector before filing a TM:PE bug report.
+
+## Getting help
+
+If you encounter a compatibility issue not covered here, check the [Troubleshooting Guide](https://github.com/CitiesSkylinesMods/TMPE/wiki/Troubleshooting) or ask in the [TM:PE Discord](https://discord.gg/faKUnST). When reporting a bug, always include your mod list so the team can identify conflicts quickly.

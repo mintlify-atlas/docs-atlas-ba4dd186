@@ -1,0 +1,170 @@
+---
+title: "Build TM:PE from source on Windows"
+description: "Set up Visual Studio or JetBrains Rider, clone the repository, configure managed DLL references, and compile TM:PE in DEBUG, RELEASE, or RELEASE LABS mode."
+---
+
+TM:PE is built as a standard C# solution targeting the Cities: Skylines modding API. You compile it to a `.dll` that the game loads at runtime. The team strongly recommends doing development work on Windows — tooling is far more complete there. If you are on a Mac, set up a Boot Camp partition for Windows and use that.
+
+<Steps>
+
+<Step title="Install required software">
+
+You need an IDE and a GitHub client. You only need to do this once.
+
+**IDE — choose one:**
+
+<Tabs>
+  <Tab title="Visual Studio">
+    Download [Visual Studio Community](https://visualstudio.microsoft.com/vs/) (free). You must use the [2019 release](https://docs.microsoft.com/en-us/visualstudio/releases/2019/release-notes) or later.
+  </Tab>
+  <Tab title="JetBrains Rider">
+    Download [JetBrains Rider](https://www.jetbrains.com/rider/) (paid). After installation, [activate Roslyn Analyzers](https://www.jetbrains.com/help/rider/Settings_Roslyn_Analyzers.html) — this is required for TM:PE.
+  </Tab>
+</Tabs>
+
+**GitHub client — choose one:**
+
+- [GitHub Desktop](https://desktop.github.com/) — recommended if you are not used to working with GitHub
+- [Git for Windows](https://gitforwindows.org/)
+
+</Step>
+
+<Step title="Clone the repository">
+
+You only need to do this once.
+
+<Tabs>
+  <Tab title="GitHub Desktop">
+    1. Go to [the online repository](https://github.com/CitiesSkylinesMods/TMPE).
+    2. Click the green **Clone or Download** button and choose **Open in Desktop**.
+    3. Follow the on-screen instructions — dependencies are handled automatically.
+  </Tab>
+  <Tab title="Git for Windows">
+    Open the built-in console and run:
+
+    ```bash
+    git clone https://github.com/CitiesSkylinesMods/TMPE
+    cd TMPE
+    git submodule update --init --recursive
+    ```
+  </Tab>
+</Tabs>
+
+<Warning>
+**Windows 10 Mandatory ASLR**
+
+Recent versions of Windows 10 include an anti-exploit mechanism called [Mandatory ASLR](https://msrc-blog.microsoft.com/2017/11/21/clarifying-the-behavior-of-mandatory-aslr/). This can prevent Unix-like executables (such as those used by GitHub) from running. If you see errors like:
+
+```text
+...\git\usr\bin\sh.exe: *** fatal error - cygheap base mismatch detected
+...\app\mingw64\libexec\git-core\git-submodule: line 1121: cmd_: command not found
+```
+
+The only known workaround is to exclude all executables in `\resources\app\git\` from Mandatory ASLR. See [GitHub Desktop issue #3096](https://github.com/desktop/desktop/issues/3096#issuecomment-529138491) for details.
+</Warning>
+
+</Step>
+
+<Step title="Configure managed DLL references">
+
+TM:PE requires references to several "managed" `.dll` files bundled with Cities: Skylines. The build system tries to locate them automatically. If your IDE reports missing references, follow the steps below. You only need to do this once.
+
+**Locate the Managed folder**
+
+<Tabs>
+  <Tab title="Steam">
+    Find your Steam folder (normally `C:\Program Files (x86)\Steam\` on Windows). The managed DLLs are in:
+
+    ```
+    \steamapps\common\Cities_Skylines\Cities_Data\Managed\
+    ```
+
+    You can also check the location in the Steam client at **Steam > Settings > Downloads > Steam Library Folders**.
+  </Tab>
+  <Tab title="EA Origin">
+    Find your Origin Games folder (normally `C:\Program Files (x86)\Origin Games` on Windows). The managed DLLs are in:
+
+    ```
+    \Cities Skylines\Cities_Data\Managed\
+    ```
+  </Tab>
+</Tabs>
+
+**Point your IDE at the Managed folder**
+
+Choose one of these approaches inside your local `TMPE` repository clone:
+
+- Create a `\TLM\dependencies` folder and copy the `.dll` files into it _(simple, but you must repeat this after each game update)_
+- Create a `\TLM\dependencies` [symlink](https://github.com/git-for-windows/git/wiki/Symbolic-Links) pointing to the `Managed` folder you located above
+- Add the reference path manually in your IDE _(see below)_
+
+<Tabs>
+  <Tab title="Visual Studio">
+    Open `\TLM\TMPE.sln`, then for each project listed in **Solution Explorer**:
+
+    1. Right-click the project and choose **Properties**.
+    2. Select **Reference Paths** on the left.
+    3. Add the full path to the `Managed` folder.
+  </Tab>
+  <Tab title="JetBrains Rider">
+    Rider has no GUI for reference paths, so you add them manually. For each project, create a `<ProjectName>.csproj.user` file in that project's folder. For example, the `TLM` project needs `TLM\TLM.csproj.user`:
+
+    ```xml
+    <?xml version="1.0" encoding="utf-8"?>
+    <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+        <PropertyGroup>
+            <ReferencePath>C:\full\path\to\Managed\</ReferencePath>
+        </PropertyGroup>
+    </Project>
+    ```
+
+    Edit the `<ReferencePath>` value to match your actual `Managed` folder path.
+  </Tab>
+</Tabs>
+
+</Step>
+
+<Step title="Choose a build configuration and build">
+
+There are three build configurations:
+
+| Configuration | Purpose | Mod display name |
+|---|---|---|
+| `DEBUG` | Enables the in-game debug menu, debug overlays, and debug logging | includes `DEBUG` |
+| `RELEASE` | Public release of the `STABLE` edition | includes `STABLE` |
+| `RELEASE LABS` | Public release of the `LABS` edition | includes `LABS` |
+
+<Tabs>
+  <Tab title="Visual Studio">
+    1. Select the desired configuration from the drop-down on the toolbar (adjacent to `Any CPU`).
+    2. Build:
+       - Right-click the **TLM** project in **Solution Explorer** and choose **Build**, or
+       - Use **Build > Build Solution** (`Ctrl+Shift+B`).
+  </Tab>
+  <Tab title="JetBrains Rider">
+    1. Select the desired configuration from the dropdown on the actions bar (under the Team menu).
+    2. Build:
+       - Right-click the **TLM** project in **Solution Explorer** and choose **Build**, or
+       - Use **Build > Build Solution** (`F6`).
+  </Tab>
+</Tabs>
+
+<Note>
+If you get errors at the build step, your IDE most likely cannot find the managed `.dll` files. Go back to the **Configure managed DLL references** step above.
+</Note>
+
+</Step>
+
+<Step title="Test in-game">
+
+After a successful build, the compiled DLL files are automatically copied to the game's local mods folder via post-build events on the `TLM` project.
+
+Launch Cities: Skylines and enable the mod in **Content Manager > Mods**.
+
+<Tip>
+To get file and line numbers in exception stack traces, follow the [Debug Symbols](https://github.com/CitiesSkylinesMods/TMPE/blob/master/docs/Debug_Symbols.md) guide. This requires installing Unity 5.6.7 and replacing `ColossalManaged.dll` with a modified version.
+</Tip>
+
+</Step>
+
+</Steps>

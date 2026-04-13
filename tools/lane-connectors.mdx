@@ -1,0 +1,71 @@
+---
+title: "Lane connectors: draw explicit lane routing"
+description: "Draw precise connections from source lanes to specific target lanes, giving vehicles exact routing paths through complex intersections in Cities: Skylines."
+---
+
+The Lane Connectors tool gives you the most granular routing control in TM:PE. Instead of assigning directional arrows to entire lanes, you draw explicit curves from each incoming lane to one or more outgoing lanes. This is especially useful at complex intersections where you need to prevent lane-crossing conflicts, enforce dedicated turn lanes, or set up "stay in lane" routing through a T-junction or interchange.
+
+<Steps>
+  <Step title="Activate the Lane Connectors tool">
+    Click the **Lane Connectors** button in the TM:PE main menu. White node circles appear at all configurable junctions within the camera view.
+  </Step>
+  <Step title="Click a junction node to begin editing">
+    Click any highlighted node circle on the map. Colored lane-end markers appear on each road approach at the junction. Circular markers represent road lanes; square markers represent track lanes (train/tram/metro); diamond markers represent bidirectional lanes.
+  </Step>
+  <Step title="Select a source lane">
+    Click a lane-end marker on an incoming road approach. The marker highlights and the tool enters target-selection mode. A white curve follows your cursor as you move toward outgoing lanes.
+  </Step>
+  <Step title="Connect to a target lane">
+    Click a lane-end marker on an outgoing road approach to create a connection. The curve locks in and is drawn in the source lane's color. The cursor changes to a plus icon when hovering over an unconnected target, and a minus icon when hovering over an already-connected one — click again to remove the connection.
+
+    <Tip>
+      A lane may connect to multiple outgoing lanes (multi-target). Click additional target markers to add more connections from the same source.
+    </Tip>
+  </Step>
+  <Step title="Use Stay In Lane for straight-through roads">
+    At a T-junction or a road that passes straight through with a side connection, press the **Stay In Lane** shortcut (default **Ctrl+S**, configurable in Options → Keybinds) to automatically connect lanes so that through-traffic stays in its lane. Press the shortcut again to cycle through forward, backward, or both directions.
+  </Step>
+  <Step title="Remove all connections at a node">
+    Press the **Restore Defaults** key (default **Delete**) to clear all lane connections at the currently selected node.
+  </Step>
+  <Step title="Exit or switch nodes">
+    Click another node circle to switch to a different junction. Right-click or click the Lane Connectors button to exit the tool.
+  </Step>
+</Steps>
+
+<AccordionGroup>
+  <Accordion title="Marker shapes and what they mean">
+    | Shape | Lane type |
+    |---|---|
+    | Circle | Standard road lane (one-directional) |
+    | Square | Rail / tram / metro track lane (one-directional) |
+    | Diamond | Bidirectional lane (can be both source and target) |
+
+    Dead-end markers (a dead-end sign icon) indicate a lane that currently has no outgoing connections — traffic entering that lane cannot exit the junction normally.
+  </Accordion>
+
+  <Accordion title="Road vs track connections">
+    By default the tool operates on road lanes. Hold **Alt** to switch to track lanes (tram, metro, monorail) at the selected junction. Hold **Shift** to operate on all vehicle types simultaneously (bidirectional combined mode).
+  </Accordion>
+
+  <Accordion title="Interaction with Lane Arrows">
+    Creating lane connections overrides Lane Arrow assignments for the connected lanes. The Lane Arrows tool will show those lanes as locked. Remove lane connections to restore manual arrow control.
+  </Accordion>
+
+  <Accordion title="Stay In Lane modes">
+    The Stay In Lane shortcut cycles through:
+
+    | Mode | Effect |
+    |---|---|
+    | **Both** | Connects lanes in both directions along the main road |
+    | **Forward** | Connects only lanes heading away from the junction |
+    | **Backward** | Connects only lanes heading toward the junction |
+    | **None** | Clears the stay-in-lane setup |
+
+    A guide notification appears if the junction geometry does not support Stay In Lane for the current configuration.
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+  Lane connection data is saved with the city. Rebuilding a segment or junction deletes its connections. If TM:PE is removed, vehicles fall back to game-default routing at all junctions.
+</Note>

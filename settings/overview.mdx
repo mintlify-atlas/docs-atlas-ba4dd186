@@ -1,0 +1,61 @@
+---
+title: "TM:PE settings and configuration overview"
+description: "A complete guide to every settings tab in TM:PE, where configuration files are stored, and how per-city options differ from global preferences."
+---
+
+TM:PE exposes its configuration through a multi-tab options panel inside the Cities: Skylines mod settings screen. The panel is split into six tabs that group related controls together. Some settings apply to every city you play (global), while others are saved inside your savegame and affect only that city.
+
+## Settings tabs
+
+| Tab | What you configure |
+|---|---|
+| **General** | Language, speed-limit display unit, road-sign theme, simulation accuracy, UI scale and opacity, position locks, compatibility checks |
+| **Gameplay** | Vehicle behaviour, Advanced Vehicle AI, Dynamic Lane Selection, Parking AI, public transport path-finding |
+| **Policies & Restrictions** | Junction, road, highway, emergency, priority-road, and roundabout default policies |
+| **Overlays** | Which overlay icons are visible on the map (priority signs, speed limits, lane connectors, etc.) |
+| **Maintenance** | Enable or disable individual TM:PE features; despawn options; reset and export tools |
+| **Keybinds** | Keyboard shortcuts for every TM:PE tool |
+
+## Per-city vs global settings
+
+TM:PE uses two distinct storage scopes:
+
+- **Per-city (savegame)** — Options such as simulation accuracy, Advanced Vehicle AI, and overlay visibility are stored inside the `.crp` savegame file. Changing them in one city has no effect on another.
+- **Global** — Options such as language, UI scale, compatibility checks, and the main-menu button position are stored in `TMPE_GlobalConfig.xml` and apply across all cities.
+
+<Info>
+If you open the mod options panel from the Cities: Skylines main menu (before loading a city), per-city options are read-only and a warning will appear. Load a city first to change savegame-scoped settings.
+</Info>
+
+## Configuration file locations
+
+| File | Scope | Contents |
+|---|---|---|
+| `TMPE_GlobalConfig.xml` | Global | UI preferences, language, compatibility settings, AI tuning parameters |
+| `TMPE_Keybinds.xml` | Global | Keyboard shortcut bindings for all TM:PE tools |
+| Your `.crp` savegame | Per-city | Simulation accuracy, AI toggles, overlay visibility, policy defaults |
+
+`TMPE_GlobalConfig.xml` is written to your Cities: Skylines application data folder alongside other mod config files. TM:PE writes it automatically whenever you change a global setting, and reloads it if a newer version is detected on disk.
+
+<Warning>
+Do not edit `TMPE_GlobalConfig.xml` by hand while the game is running. The game may overwrite your changes when it next saves the file.
+</Warning>
+
+## Explore the settings pages
+
+<CardGroup cols={2}>
+  <Card
+    title="Gameplay and AI settings"
+    icon="brain"
+    href="/settings/gameplay"
+  >
+    Simulation accuracy, Advanced Vehicle AI, Dynamic Lane Selection, Parking AI, and path-finding tuning.
+  </Card>
+  <Card
+    title="Keyboard shortcuts and keybinds"
+    icon="keyboard"
+    href="/settings/keybinds"
+  >
+    Every configurable keyboard shortcut for TM:PE tools, plus instructions for changing bindings.
+  </Card>
+</CardGroup>

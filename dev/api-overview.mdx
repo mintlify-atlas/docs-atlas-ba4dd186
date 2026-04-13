@@ -1,0 +1,131 @@
+---
+title: "Integrate your mod with TM:PE using the C# API"
+description: "Learn how to access TM:PE manager interfaces from your own Cities: Skylines mod using the TMPE.API assembly and the Implementations entry point."
+---
+
+TM:PE exposes a stable C# API through the `TMPE.API` assembly so that other mods can read and modify traffic rules, speed limits, lane arrows, vehicle restrictions, and more without depending on TM:PE's internal implementation details. You reference the public interface types at compile time and resolve the live implementations at runtime through a single entry point: `Implementations.ManagerFactory`.
+
+## Prerequisites
+
+Before calling any TM:PE API, your mod must:
+
+1. Reference the `TMPE.API` assembly in your project (add it as a reference, not a dependency that ships with your mod).
+2. Ensure TM:PE is loaded before you access any manager. The safest place to do this is inside a level-loaded callback or after confirming TM:PE is present in the plugin manager.
+
+<Warning>
+  Do not access `Implementations.ManagerFactory` at mod startup or in a static constructor. TM:PE registers its implementations only after it finishes loading. Calling the factory too early returns `null` and can crash your mod.
+</Warning>
+
+## Getting started
+
+<Steps>
+  <Step title="Detect the TM:PE version">
+    Load the TM:PE assembly and check its version before using any API surface. See the [version detection guide](/dev/api-version-detection) for the full version-numbering explanation.
+
+    ```csharp
+    using System;
+    using System.Reflection;
+    using TrafficManager.API;
+
+    Version TMPE_Version = Assembly.Load("TrafficManager").GetName().Version;
+
+    if (TMPE_Version >= new Version(11, 1, 0)) {
+        // Version 11.1.0 and above — assembly version is reliable (M.m.b.*)
+        var factory = Implementations.ManagerFactory;
+        // use factory...
+    }
+    ```
+  </Step>
+
+  <Step title="Access a manager through the factory">
+    Once you have confirmed the version, retrieve the specific manager you need from the factory:
+
+    ```csharp
+    using TrafficManager.API;
+    using TrafficManager.API.Manager;
+
+    var factory = Implementations.ManagerFactory;
+    ISpeedLimitManager speedLimits = factory.SpeedLimitManager;
+
+    // Get the effective speed limit for a lane (game units)
+    float limit = speedLimits.GetGameSpeedLimit(laneId, laneInfo);
+    ```
+  </Step>
+
+  <Step title="Convert units if needed">
+    Speed values returned by `ISpeedLimitManager` are in game speed units. Use the constants in `ApiConstants` to convert them:
+
+    ```csharp
+    using TrafficManager.API.Traffic;
+
+    float limitKmh  = limit * ApiConstants.SPEED_TO_KMPH;  // 1.0 game unit = 50 km/h
+    float limitMph  = limit * ApiConstants.SPEED_TO_MPH;   // 1.0 game unit ≈ 31.06 mph
+    ```
+  </Step>
+</Steps>
+
+## How the API is structured
+
+The `TMPE.API` project contains only interfaces, enums, and data structures — no implementation code. At runtime, TM:PE registers concrete implementations against those interfaces. The `Implementations` static class is the bridge:
+
+```csharp
+// TrafficManager.API.Implementations (simplified)
+public static class Implementations {
+    public static IManagerFactory ManagerFactory { get; }
+    public static INotifier       Notifier       { get; }
+    public static IUIFactory      UIFactory      { get; }
+}
+```
+
+- **`ManagerFactory`** — the primary entry point; gives you every traffic manager.
+- **`Notifier`** — subscribe to `EventLevelLoaded` and `EventModified` to react to TM:PE events.
+- **`UIFactory`** — access the active UI theme and its textures (for overlay rendering).
+
+## Available managers
+
+`IManagerFactory` exposes the following managers as properties. Each property returns an interface defined in `TrafficManager.API.Manager`:
+
+| Property | Interface | Purpose |
+|---|---|---|
+| `SpeedLimitManager` | `ISpeedLimitManager` | Read effective speed limits per lane |
+| `LaneArrowManager` | `ILaneArrowManager` | Read combined default + custom lane arrows |
+| `LaneConnectionManager` | `ILaneConnectionManager` | Query custom lane routing connections |
+| `JunctionRestrictionsManager` | `IJunctionRestrictionsManager` | Get and set u-turns, turn-on-red, lane changes, pedestrian crossings |
+| `TrafficPriorityManager` | `ITrafficPriorityManager` | Query and evaluate priority signs at junctions |
+| `VehicleRestrictionsManager` | `IVehicleRestrictionsManager` | Get and modify which vehicle types may use a lane |
+| `ParkingRestrictionsManager` | `IParkingRestrictionsManager` | Query and set parking permissions per segment |
+| `TrafficLightSimulationManager` | `ITrafficLightSimulationManager` | Check whether a node has timed traffic light simulations |
+| `TrafficMeasurementManager` | `ITrafficMeasurementManager` | Read live traffic flow data per lane and segment |
+| `CustomSegmentLightsManager` | `ICustomSegmentLightsManager` | Work with custom per-segment signal phases |
+| `AdvancedParkingManager` | `IAdvancedParkingManager` | Advanced parking behaviour hooks |
+| `ExtBuildingManager` | `IExtBuildingManager` | Extended building data |
+| `ExtCitizenManager` | `IExtCitizenManager` | Extended citizen data |
+| `ExtCitizenInstanceManager` | `IExtCitizenInstanceManager` | Extended citizen instance data |
+| `ExtNodeManager` | `IExtNodeManager` | Extended node data |
+| `ExtPathManager` | `IExtPathManager` | Extended path data |
+| `ExtSegmentManager` | `IExtSegmentManager` | Extended segment data |
+| `ExtSegmentEndManager` | `IExtSegmentEndManager` | Extended segment-end data |
+| `ExtVehicleManager` | `IExtVehicleManager` | Extended vehicle data |
+| `GeometryManager` | `IGeometryManager` | Road network geometry helpers |
+| `OptionsManager` | `IOptionsManager` | TM:PE option access |
+| `RoutingManager` | `IRoutingManager` | Routing and path-cost data |
+| `SegmentEndManager` | `ISegmentEndManager` | Segment-end state |
+| `TrafficLightManager` | `ITrafficLightManager` | Basic traffic light state |
+| `TurnOnRedManager` | `ITurnOnRedManager` | Turn-on-red rule data |
+| `UtilityManager` | `IUtilityManager` | Miscellaneous utility helpers |
+| `VehicleBehaviorManager` | `IVehicleBehaviorManager` | Vehicle behaviour overrides |
+
+<Note>
+  Not every manager's interface is fully defined yet. The ones most useful for typical mod integration — speed limits, lane arrows, junction restrictions, traffic priority, vehicle restrictions, lane connections, and traffic light simulation — are documented in detail on the managers reference page.
+</Note>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Manager interfaces reference" icon="book-open" href="/dev/api-managers">
+    Detailed method signatures, enum values, and usage examples for every documented manager.
+  </Card>
+  <Card title="Detect TM:PE version" icon="tag" href="/dev/api-version-detection">
+    Understand the version numbering scheme and how to gate your API calls safely.
+  </Card>
+</CardGroup>

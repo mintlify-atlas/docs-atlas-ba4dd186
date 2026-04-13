@@ -1,0 +1,353 @@
+---
+title: "TM:PE logging: TMPE.log and debug switches"
+description: "Find TMPE.log on Windows, Mac, and Linux; toggle debug switches in TMPE_GlobalConfig.xml; and use every method in the Log class correctly."
+---
+
+TM:PE writes its own log file — `TMPE.log` — instead of relying on the game's `output_log.txt` or `Player.log`. The game log is generally huge and hard to browse; a dedicated log makes it far easier to diagnose issues. On top of that, TM:PE ships with a large set of pre-wired debug log messages that you can turn on or off without changing any code. The static `Log` class in `CSUtil.Commons/Log.cs` provides every method you need, with clear performance trade-offs for each.
+
+## Log file location
+
+| Platform | Path |
+|---|---|
+| Windows | Same folder as `output_log.txt` (e.g., next to `Cities.exe`) |
+| Mac | Same folder as `Player.log` (updated in TM:PE v11.9.2.0) |
+| Linux | `~/.config/unity3d/Colossal Order/Cities: Skylines/TMPE.log` |
+
+<Note>
+If you launch the game with the `-logFile` flag, `TMPE.log` is written to the same directory as the file you specified.
+</Note>
+
+## Debug switches
+
+TM:PE contains many existing log statements that are gated behind named switches. You flip a switch to enable the corresponding group of log output without touching any source code.
+
+### Toggling switches
+
+<Steps>
+
+<Step title="Build in DEBUG mode and launch the game">
+
+Build the solution with the `DEBUG` configuration, then launch Cities: Skylines and open TM:PE mod settings at least once. This causes the mod to write a `<Debug>` section into `TMPE_GlobalConfig.xml`.
+
+</Step>
+
+<Step title="Locate TMPE_GlobalConfig.xml">
+
+The file is in the game's root folder, for example:
+
+```text
+C:\Program Files (x86)\Steam\steamapps\common\Cities_Skylines\TMPE_GlobalConfig.xml
+```
+
+</Step>
+
+<Step title="Edit the boolean values">
+
+The `<Debug>` section looks like this:
+
+```xml
+<Debug>
+  <Switches>
+    <boolean>false</boolean>
+    <boolean>false</boolean>
+    ...
+  </Switches>
+  <ExtVehicleType>None</ExtVehicleType>
+  <ExtPathMode>None</ExtPathMode>
+</Debug>
+```
+
+Each `<boolean>` corresponds, by position, to an entry in the `DebugSwitch` enum in `TLM/State/ConfigData/DebugSettings.cs`. Change a value from `false` to `true` to enable that switch's logging.
+
+</Step>
+
+<Step title="Reload the configuration in-game">
+
+1. Open TM:PE mod options.
+2. Select the **Maintenance** tab.
+3. Click **Reload global configuration**.
+
+Log output for that switch now appears in `TMPE.log`.
+
+</Step>
+
+</Steps>
+
+### Available debug switches
+
+The full list of switches is defined in `DebugSettings.cs`:
+
+```csharp
+[Flags]
+public enum DebugSwitch {
+    None = 0,
+    RoutingBasicLog = 1 << 0,
+    Routing = 1 << 1,
+    NoRoutingRecalculationOnConfigReload = 1 << 2,
+    PathFindingLog = 1 << 3,
+    PedestrianPathfinding = 1 << 4,
+    TransportLinePathfind = 1 << 5,
+    BasicParkingAILog = 1 << 6,
+    ExtendedParkingAILog = 1 << 7,
+    ParkingAIDistanceIssue = 1 << 8,
+    VehicleParkingAILog = 1 << 9,
+    NoRepairStuckVehiclesCims = 1 << 10,
+    GeometryDebug = 1 << 11,
+    TimedTrafficLights = 1 << 12,
+    VehicleLinkingToSegmentEnd = 1 << 13,
+    JunctionRestrictions = 1 << 14,
+    PriorityRules = 1 << 15,
+    NoValidPathCitizensOverlay = 1 << 16,
+    TramsNoOtherVehiclesChecking = 1 << 17,
+    TramBaseAISimulationStep = 1 << 18,
+    AlternativeLaneSelection = 1 << 19,
+    RealisticPublicTransport = 1 << 20,
+    CalculateSegmentPosition = 1 << 21,
+    LaneConnections = 1 << 23,
+    ResourceLoading = 1 << 24,
+    TurnOnRed = 1 << 25,
+    SpeedLimits = 1 << 26,
+    ULibraryEvents = 1 << 27,
+}
+```
+
+Use a switch value with the conditional logging methods shown below:
+
+```csharp
+Log._DebugIf(DebugSwitch.LaneConnections.Get(), () => $"Lane connection changed: {segmentId}");
+Log.WarningIf(DebugSwitch.PriorityRules.Get(), () => $"Priority rule conflict at node {nodeId}");
+```
+
+### Extended filtering
+
+You can further filter existing log output by vehicle type or path mode:
+
+```xml
+<ExtVehicleType>None</ExtVehicleType>
+<ExtPathMode>None</ExtPathMode>
+```
+
+Set these to a specific enum value to restrict logging to that type. `None` means no filtering is applied.
+
+### Adding a new switch
+
+1. Add a new entry to the `DebugSwitch` enum in `TLM/State/ConfigData/DebugSettings.cs`.
+2. If `TMPE_GlobalConfig.xml` already has a `<Debug>` section, add a new `<boolean>false</boolean>` element before launching the game — the order must match the enum.
+
+## Logging methods
+
+The `Log` class lives in `CSUtil.Commons/Log.cs`. All methods are `static`.
+
+<Warning>
+Large parts of TM:PE code run every frame. Use the logging methods that match your performance budget, and avoid in-game usage of always-on methods (`Log.Info`, `Log.Warning`, `Log.Error`) in hot paths.
+</Warning>
+
+### All builds
+
+These methods are present in every build configuration, including `RELEASE`. Use them sparingly in hot paths.
+
+<AccordionGroup>
+
+<Accordion title="Log.Info(str)">
+
+Writes a string to `TMPE.log` at the Info level.
+
+```csharp
+Log.Info("Hello world!");
+```
+
+Avoid building the string with multiple chained `$"string {interpolations}"` — use `Log.InfoFormat()` instead for anything complex.
+
+</Accordion>
+
+<Accordion title="Log.InfoFormat(format, args)">
+
+Formats the string at the call site using `string.Format` and writes it at Info level. Useful for long format strings with multiple arguments.
+
+```csharp
+Log.InfoFormat("Some {0} {1} {2}", "string", "with", "args");
+```
+
+</Accordion>
+
+<Accordion title="Log.Warning(str)">
+
+Like `Log.Info()` but at Warning level. Also writes a stack trace to the log.
+
+</Accordion>
+
+<Accordion title="Log.WarningFormat(format, args)">
+
+Like `Log.InfoFormat()` but at Warning level. Also writes a stack trace.
+
+</Accordion>
+
+<Accordion title="Log.WarningIf(switch, func)">
+
+Calls the lambda `func` and logs the result at Warning level — but only if `switch` evaluates to `true`. Also writes a stack trace.
+
+```csharp
+Log.WarningIf(DebugSwitch.LaneConnections.Get(), () => $"string {interpolation}");
+```
+
+<Note>
+Lambdas cannot capture `out` or `ref` variables. If you need those, use an explicit `if` check followed by `Log.Warning()`.
+</Note>
+
+</Accordion>
+
+<Accordion title="Log.Error(str)">
+
+Like `Log.Info()` but at Error level. Also writes a stack trace.
+
+</Accordion>
+
+<Accordion title="Log.ErrorFormat(format, args)">
+
+Like `Log.InfoFormat()` but at Error level. Also writes a stack trace.
+
+</Accordion>
+
+<Accordion title="Log.ErrorIf(switch, func)">
+
+Like `Log.WarningIf()` but at Error level. Also writes a stack trace.
+
+</Accordion>
+
+</AccordionGroup>
+
+### DEBUG builds only
+
+Methods prefixed with `_` — and `Log.NotImpl()` — are decorated with `[Conditional("DEBUG")]`. The compiler removes all calls to these methods in `RELEASE` and `RELEASE LABS` builds, so they have **zero runtime cost** in production.
+
+<AccordionGroup>
+
+<Accordion title="Log._Debug(str)">
+
+Like `Log.Info()` but at Debug level. Removed by the compiler in RELEASE builds.
+
+```csharp
+Log._Debug("Entering pathfinding loop");
+```
+
+</Accordion>
+
+<Accordion title="Log._DebugFormat(format, args)">
+
+Like `Log.InfoFormat()` but at Debug level. Removed by the compiler in RELEASE builds.
+
+```csharp
+Log._DebugFormat("Processing segment {0} at node {1}", segmentId, nodeId);
+```
+
+</Accordion>
+
+<Accordion title="Log._DebugIf(cond, func)">
+
+Calls the lambda `func` and logs the result at Debug level — only if `cond` is `true`. Removed by the compiler in RELEASE builds.
+
+```csharp
+Log._DebugIf(DebugSwitch.LaneConnections.Get(), () => $"string {interpolation}");
+```
+
+</Accordion>
+
+<Accordion title="Log._DebugOnlyWarning(str)">
+
+Like `Log.Warning()` but only active in DEBUG builds.
+
+</Accordion>
+
+<Accordion title="Log._DebugOnlyWarningIf(cond, func)">
+
+Like `Log.WarningIf()` but only active in DEBUG builds.
+
+</Accordion>
+
+<Accordion title="Log._DebugOnlyError(str)">
+
+Like `Log.Error()` but only active in DEBUG builds.
+
+</Accordion>
+
+<Accordion title="Log.NotImpl(str)">
+
+Logs an Error-level message prefixed with `Not implemented:`. Use this as a placeholder in unimplemented methods. Removed by the compiler in RELEASE builds.
+
+```csharp
+Log.NotImpl("Emergency vehicle pathfinding override");
+// Writes: "Not implemented: Emergency vehicle pathfinding override"
+```
+
+</Accordion>
+
+</AccordionGroup>
+
+### DEBUG + TRACE builds only
+
+<Accordion title="Log._Trace(str)">
+
+Like `Log.Info()` but at Trace level. Active only when **both** `DEBUG` and `TRACE` compiler symbols are defined. Removed in all other configurations.
+
+```csharp
+Log._Trace("Frame tick start");
+```
+
+</Accordion>
+
+## Performance guidance
+
+A large portion of TM:PE code runs every simulation frame. Choosing the right logging method matters.
+
+<AccordionGroup>
+
+<Accordion title="Log.Info / Log.Warning / Log.Error and _Debug / _Trace variants">
+
+The string is formatted at the call site, before the method is even called.
+
+- **Cheap** when using a `const` string or a simple format call with a few args
+- **Cheap** when the call is wrapped in `if (booleanValue) { ... }`
+- **Expensive** when multiple `$"string {interpolations}"` are chained together
+- `Log._Debug()` and `Log._Trace()` are removed entirely in RELEASE builds
+
+</Accordion>
+
+<Accordion title="Log.InfoFormat / Log.WarningFormat / Log.ErrorFormat and _DebugFormat variant">
+
+The message is formatted inside the logging method, not at the call site.
+
+- **Good** for very long format strings with multiple complex arguments
+- **Good** for strings that span multiple lines — the format literal does not allocate until logging time
+- **Expensive** if not wrapped in a conditional check, because the args array is always built
+- `Log._DebugFormat()` is removed in RELEASE builds; the others are not, so wrap them in `if (boolValue)` when in hot paths
+
+```csharp
+if (DebugSwitch.Routing.Get()) {
+    Log.InfoFormat(
+        "Routing result for vehicle {0}: path {1}, cost {2}, nodes visited {3}",
+        vehicleId, pathId, cost, nodesVisited);
+}
+```
+
+</Accordion>
+
+<Accordion title="Log.WarningIf / Log.ErrorIf and _DebugIf variant">
+
+The condition is checked first. If it is `true`, the lambda is called and its return value is logged.
+
+- **Good** — the actual string is only formatted if the condition holds
+- **Cheap** — lambda capture cost is equivalent to building an args array
+- Cannot capture `out` or `ref` variables; use an explicit `if` block for those
+- `Log._DebugIf()` is removed in RELEASE builds
+
+```csharp
+Log.WarningIf(DebugSwitch.LaneConnections.Get(), () => $"string {interpolation}");
+```
+
+</Accordion>
+
+</AccordionGroup>
+
+<Tip>
+Prefer `Log._Debug()` and `Log._DebugIf()` over `Log.Info()` for any message that is useful only during development. The `_Debug` variants disappear entirely from RELEASE builds, adding zero overhead for players.
+</Tip>

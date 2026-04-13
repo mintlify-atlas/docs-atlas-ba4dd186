@@ -1,0 +1,62 @@
+---
+title: "Lane arrows: control turn directions per lane"
+description: "Assign left, straight, and right-turn directions to individual lanes at junctions for precise control over how traffic distributes across your road network."
+---
+
+The Lane Arrows tool lets you decide which directions each lane at a junction can serve. By default the game assigns turn directions automatically. With this tool you can dedicate lanes exclusively to turning traffic, create left-turn-only or right-turn-only lanes, and prevent through-traffic from mixing with turning vehicles — all without needing to rebuild the road.
+
+<Steps>
+  <Step title="Activate the Lane Arrows tool">
+    Click the **Lane Arrows** button in the TM:PE main menu. The map enters selection mode: eligible junction approaches highlight as you hover over them.
+  </Step>
+  <Step title="Select a segment end to edit">
+    Hover over a road approaching a junction. The half of the segment closest to the junction highlights. Click to select it. A floating panel appears over the junction showing one row of three buttons — **Left**, **Straight**, **Right** — for each vehicle lane on that approach.
+
+    <Note>
+      Only lanes that carry vehicle traffic show buttons. Pedestrian paths, bicycle lanes, and rail tracks are not configurable here.
+    </Note>
+  </Step>
+  <Step title="Toggle direction buttons">
+    Click the **Left**, **Straight**, or **Right** button for any lane to toggle that direction on or off. A button is active (lit) when the direction is enabled. Each lane must retain at least one active direction — the last remaining button cannot be deactivated.
+
+    Grayed-out buttons indicate directions that are physically unavailable for that lane (for example, a lane that has no valid road to turn into on that side).
+  </Step>
+  <Step title="Auto-separate turning lanes (optional)">
+    Instead of editing buttons manually, you can let TM:PE distribute lanes automatically:
+
+    - Hold **Alt** and click a segment approach to auto-separate the lanes on that segment only.
+    - Hold **Ctrl** and click to auto-separate all approaches at the entire junction.
+
+    Clicking again with the same modifier cycles through alternative separation layouts.
+  </Step>
+  <Step title="Reset to game defaults">
+    Press the **Restore Defaults** key (configurable in Options → Keybinds, default **Delete**) while a segment is selected to remove all custom arrow assignments and let the game manage that approach automatically.
+  </Step>
+  <Step title="Select a different segment or exit">
+    Click any other approach on the map to switch without deselecting. Right-click to deselect the current segment and return to selection mode. Right-click again (or click the Lane Arrows button) to exit the tool.
+  </Step>
+</Steps>
+
+<AccordionGroup>
+  <Accordion title="Available arrow directions">
+    | Direction | Meaning |
+    |---|---|
+    | **Left** | Lane may turn left at the junction |
+    | **Straight** | Lane may continue forward through the junction |
+    | **Right** | Lane may turn right at the junction |
+
+    Combinations are permitted: a lane can be set to Left + Straight, Left + Right, Straight + Right, or Left + Straight + Right simultaneously.
+  </Accordion>
+
+  <Accordion title="Interaction with Lane Connectors">
+    If you have used the Lane Connectors tool to draw explicit lane-to-lane connections on the same segment end, lane arrows for those lanes are locked to match the connections and cannot be changed here. A guide notification appears when this is the case. Remove the lane connections first if you need to reassign arrows manually.
+  </Accordion>
+
+  <Accordion title="Interaction with highway rules">
+    On roads where the game enforces highway merging rules, lane arrow customization may be blocked. A guide notification explains the conflict. You can disable highway rules in TM:PE Options → Gameplay if you want full manual control.
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+  Lane arrow assignments are saved with the city. Demolishing and rebuilding a segment removes any custom arrows on that segment. If TM:PE is removed, junctions fall back to game-default arrow behavior.
+</Note>

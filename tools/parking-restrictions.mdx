@@ -1,0 +1,55 @@
+---
+title: "Parking restrictions: control curbside parking"
+description: "Enable or disable curbside parking on individual road segments per traffic direction, giving precise control over where vehicles may park on your streets."
+---
+
+The Parking Restrictions tool lets you turn curbside parking on or off for any eligible road segment, one side of the road at a time. By default, most residential and commercial roads allow parking on both sides. You can ban parking to improve traffic flow on busy roads, or selectively allow it only on one side to maintain a travel lane.
+
+<Steps>
+  <Step title="Activate the Parking Restrictions tool">
+    Click the **Parking Restrictions** button in the TM:PE main menu. Parking sign icons appear along road segments that already have custom restrictions. Roads with default parking behavior show no icon until you hover over them.
+  </Step>
+  <Step title="Hover over a road to see parking signs">
+    Move your cursor over any road segment that supports parking. A parking sign appears on each side of the road, showing whether parking is currently allowed (green "P" sign) or banned (red crossed "P" sign) in that direction.
+  </Step>
+  <Step title="Click a parking sign to toggle it">
+    Click the parking sign icon on the side of the road you want to change. The sign flips between allowed and banned. The change applies to that direction of the segment independently from the other side.
+
+    <Note>
+      Only roads that physically support curbside parking will show signs. Highways, one-way roads without a parking lane, and roads that do not support the parking mechanic will not be affected by this tool.
+    </Note>
+  </Step>
+  <Step title="Apply restrictions to an entire road (optional)">
+    Hold **Shift** while clicking to apply the parking restriction to the entire road between two junctions simultaneously, rather than one segment at a time. This is useful for long arterials where you want to clear parking along the full length.
+  </Step>
+  <Step title="Exit the tool">
+    Right-click or click the Parking Restrictions button to exit the tool.
+  </Step>
+</Steps>
+
+<AccordionGroup>
+  <Accordion title="Directional parking restrictions">
+    Each segment has two travel directions, and parking can be configured independently for each side. This allows you to:
+
+    - Allow parking on the eastbound side of a two-way road but ban it on the westbound side.
+    - Create parking on one side for peak-hour traffic management (though TM:PE does not simulate time-of-day rules — restrictions are always active once set).
+  </Accordion>
+
+  <Accordion title="Roads that may not support restrictions">
+    Some road segments cannot have their parking changed:
+
+    - Highways and expressways with no dedicated parking lane.
+    - Pedestrian roads and paths.
+    - Roads where the road asset itself does not include a parking lane geometry.
+
+    The tool checks eligibility automatically and shows no icon on ineligible segments.
+  </Accordion>
+
+  <Accordion title="Effect on citizens and deliveries">
+    Banning curbside parking does not move parked vehicles that are already there — they will finish their parking session and leave normally, but new vehicles will not park in the banned area. Citizens whose destination has no accessible parking will use parking garages, park-and-ride facilities, or may arrive on foot from a nearby parking spot instead.
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+  Parking restriction data is saved with the city. If TM:PE is removed, all curbside parking reverts to the default state defined by the road asset. Demolishing and rebuilding a segment also clears any custom restriction on that segment.
+</Note>

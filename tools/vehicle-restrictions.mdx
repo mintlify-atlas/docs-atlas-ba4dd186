@@ -1,0 +1,85 @@
+---
+title: "Vehicle restrictions: limit road access by vehicle type"
+description: "Control which vehicle types may use each lane on a road segment. Ban heavy trucks from residential streets or restrict bus lanes to public transport only."
+---
+
+The Vehicle Restrictions tool lets you decide which categories of vehicle are permitted to use each lane on a road. You can ban cargo trucks from residential roads, restrict a bus lane to buses and taxis only, or prevent emergency vehicles from using a specific route. Restrictions are applied per lane, so a multi-lane road can have different rules on each lane independently.
+
+<Steps>
+  <Step title="Activate the Vehicle Restrictions tool">
+    Click the **Vehicle Restrictions** button in the TM:PE main menu. Segments that already have restrictions show vehicle-type icons along their lanes.
+  </Step>
+  <Step title="Click a road segment to select it">
+    Click any road segment. The segment highlights and a secondary panel opens at the top of the screen listing all vehicle types. Icons also appear directly on each lane of the selected segment showing which types are currently allowed (colored) or banned (grayed out).
+  </Step>
+  <Step title="Toggle vehicle types per lane">
+    Click a vehicle icon on a lane overlay to toggle that vehicle type for that lane. Alternatively, use the top panel to toggle a type across all lanes of the segment at once.
+
+    <Tip>
+      Hold **Shift** while clicking to apply restrictions to the entire road between two junctions in one action, rather than editing one segment at a time.
+    </Tip>
+  </Step>
+  <Step title="Reset a segment to defaults">
+    Press the **Restore Defaults** key (default **Delete**, configurable in Options → Keybinds) while a segment is selected to remove all custom restrictions on that segment and restore full vehicle access.
+  </Step>
+  <Step title="Exit the tool">
+    Right-click to deselect the current segment. Right-click again or click the Vehicle Restrictions button to exit the tool.
+  </Step>
+</Steps>
+
+<AccordionGroup>
+  <Accordion title="Road vehicle types">
+    These types apply to standard road lanes:
+
+    | Vehicle type | Examples |
+    |---|---|
+    | **Passenger car** | Private cars, taxis using car AI |
+    | **Bus** | City buses, intercity coaches |
+    | **Taxi** | Taxi vehicles (also counted under road public transport) |
+    | **Cargo truck** | Delivery trucks, freight lorries |
+    | **Service** | Garbage trucks, maintenance vehicles, hearses |
+    | **Emergency** | Police cars, fire engines, ambulances |
+  </Accordion>
+
+  <Accordion title="Rail and other vehicle types">
+    These types apply to specialized lanes or segments:
+
+    | Vehicle type | Examples |
+    |---|---|
+    | **Passenger train** | Intercity and metro passenger trains |
+    | **Cargo train** | Freight trains |
+    | **Tram** | Street trams |
+    | **Trolleybus** | Electric buses running on overhead wires |
+    | **Bicycle** | Cyclists (applies to roads with cycle lanes) |
+    | **Passenger ship** | Ferries carrying passengers |
+    | **Cargo ship** | Freight vessels |
+    | **Passenger plane** | Passenger aircraft (taxiways/runways) |
+    | **Cargo plane** | Freight aircraft |
+    | **Helicopter** | Helicopters |
+    | **Cable car** | Cable car vehicles |
+    | **Passenger ferry** | Passenger ferry (subset of ship) |
+    | **Passenger blimp** | Airship passenger vehicles |
+  </Accordion>
+
+  <Accordion title="Typical use cases">
+    **Residential road — ban trucks:**
+    Set the road to allow passenger cars, taxis, service, and emergency vehicles only. Block bus and cargo truck to reduce noise and wear on the local street.
+
+    **Bus lane:**
+    Allow bus, taxi, and trolleybus only. Block passenger car, cargo truck, and service so that the lane stays clear for public transport.
+
+    **Highway — no local service:**
+    Block service and emergency on the main carriageway if you want those vehicles to use parallel service roads. (Note: blocking emergency vehicles may affect response times.)
+
+    **Freight-only access road:**
+    Block passenger car and bus, allow cargo truck, service, and emergency.
+  </Accordion>
+
+  <Accordion title="Emergency vehicle access">
+    Emergency vehicles (police, fire, ambulance) ignore most traffic rules in the base game, but vehicle restrictions can still prevent them from using a lane. Use caution when banning emergency vehicles, as this may increase response times to incidents in areas served only by the restricted road.
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+  Vehicle restriction settings are saved with the city. Demolishing and rebuilding a segment removes its restrictions. If TM:PE is removed, all lanes revert to their default vehicle access as defined by the road asset.
+</Note>

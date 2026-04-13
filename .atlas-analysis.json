@@ -1,28 +1,11 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
-  "name": "TM:PE — Traffic Manager: President Edition",
+  "projectType": "general",
+  "projectName": "TM:PE — Traffic Manager: President Edition",
+  "projectDescription": "A Cities: Skylines mod that gives players fine-grained control over road and rail traffic rules, lane behavior, speed limits, traffic lights, and vehicle restrictions.",
   "theme": "almond",
-  "colors": {
-    "primary": "#949cac",
-    "light": "#10365f",
-    "dark": "#cfd5de"
-  },
-  "favicon": "https://media.brand.dev/d852f712-f268-4598-94f1-7c20064bfc93.png",
-  "logo": {
-    "light": "https://media.brand.dev/96f70f70-8577-4abf-ac07-7c8153c48809.png",
-    "dark": "https://media.brand.dev/96f70f70-8577-4abf-ac07-7c8153c48809.png"
-  },
-  "navbar": {
-    "primary": {
-      "type": "github",
-      "href": "https://github.com/CitiesSkylinesMods/TMPE"
-    }
-  },
-  "footer": {
-    "socials": {
-      "github": "https://github.com/CitiesSkylinesMods/TMPE"
-    }
-  },
+  "primaryColor": "#949cac",
+  "lightColor": "#10365f",
+  "darkColor": "#cfd5de",
   "navigation": {
     "tabs": [
       {
@@ -88,5 +71,31 @@
         ]
       }
     ]
-  }
+  },
+  "keyFeatures": [
+    "Speed limit overrides per lane or segment",
+    "Custom lane arrows and turn direction control",
+    "Lane connector tool for fine-grained routing",
+    "Manual and timed traffic light programming",
+    "Priority signs (yield, stop, main road)",
+    "Junction restrictions (u-turns, pedestrian crossings, blocked junctions)",
+    "Vehicle type restrictions per lane",
+    "Parking restrictions",
+    "Advanced AI pathfinding options",
+    "Save/load traffic configurations with city saves"
+  ],
+  "publicApiSurface": [
+    "Implementations.ManagerFactory",
+    "Implementations.Notifier",
+    "Implementations.UIFactory",
+    "IManagerFactory (gateway to all manager instances)",
+    "ISpeedLimitManager.GetGameSpeedLimit(uint laneId)",
+    "ILaneArrowManager.GetFinalLaneArrows(uint laneId)",
+    "IJunctionRestrictionsManager (IsUturnAllowed, SetUturnAllowed, etc.)",
+    "ITrafficPriorityManager.GetPrioritySign(ushort segmentId, bool startNode)",
+    "IVehicleRestrictionsManager.GetAllowedVehicleTypes(...)",
+    "ILaneConnectionManager",
+    "ITrafficLightSimulationManager",
+    "ITrafficMeasurementManager"
+  ]
 }

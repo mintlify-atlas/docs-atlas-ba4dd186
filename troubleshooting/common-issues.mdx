@@ -1,0 +1,102 @@
+---
+title: "Fix common TM:PE problems and traffic issues"
+description: "Solutions for the most frequent TM:PE problems, including traffic despawning, timed traffic lights, incompatible mods, and missing settings."
+---
+
+TM:PE adds powerful traffic controls to Cities: Skylines, but some issues come up repeatedly — vehicles disappearing, settings that seem to reset, or a warning panel on startup. This page covers the most common problems and what to do about each one.
+
+<AccordionGroup>
+  <Accordion title="Traffic despawning or vehicles disappearing">
+    Vehicles suddenly vanishing or traffic flow breaking down is usually caused by broken nodes in your road network, not TM:PE itself.
+
+    **Use Broken Node Detector** — this companion mod scans your city for broken road nodes that cause despawning. Subscribe to it on the [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=1777173984), run it from the mod's toolbar button, and follow its instructions to repair or delete the affected nodes.
+
+    Other steps to try:
+
+    - Save and reload the city to reset pathfinding.
+    - Check for recently placed road segments that cross each other or have unusual angles.
+    - Disable and re-enable TM:PE's **Advanced Vehicle AI** option in mod settings to reset AI state.
+  </Accordion>
+
+  <Accordion title="Timed traffic lights not working">
+    If timed traffic lights are not cycling or are stuck on one phase, work through these checks:
+
+    1. Confirm the intersection has a traffic light placed by TM:PE. A vanilla traffic light is not the same as a TM:PE timed traffic light — open the **Timed Traffic Lights** tool and click the intersection to check.
+    2. Make sure the simulation is running (not paused). Timed lights do not advance while the game is paused.
+    3. Check that no incompatible mod is overriding traffic light behaviour. Refer to the incompatible mods accordion below.
+    4. Recent fix (v11.9.3.0): if you use the **Reversible Tram AI** mod, update TM:PE to v11.9.3.0 or later — earlier versions failed to detect waiting trams at timed intersections.
+    5. Delete the timed light setup and recreate it if the issue persists on a specific intersection.
+  </Accordion>
+
+  <Accordion title="Incompatible mod warning on startup">
+    When TM:PE detects a mod that conflicts with it, the **Incompatible Mods Panel** appears automatically at startup. This panel lists each conflicting mod by name.
+
+    **What to do:**
+
+    - Click the mod name in the panel to open its Steam Workshop page, then unsubscribe.
+    - If you need similar functionality, search the workshop for a replacement that is compatible with the current Cities: Skylines version.
+    - You can turn off the startup check in TM:PE mod options → **Maintenance** tab → uncheck **Check for incompatible mods on load** — but this is not recommended, because incompatible mods can corrupt saves.
+
+    If the panel appears every time even after removing the listed mods, try disabling all mods and re-enabling them one by one to identify which one is still causing the detection.
+  </Accordion>
+
+  <Accordion title="Settings not saving">
+    TM:PE stores settings in two places:
+
+    | File | What it stores |
+    |------|---------------|
+    | `TMPE_GlobalConfig.xml` | Global options (UI preferences, AI toggles, debug switches). Saved in the Cities: Skylines game folder. |
+    | City save file | Per-city data: lane connectors, priority signs, speed limits, traffic light timings. |
+
+    **If global settings reset on each launch:** locate `TMPE_GlobalConfig.xml` in your Cities: Skylines installation folder (e.g. `C:\Program Files (x86)\Steam\steamapps\common\Cities_Skylines`) and check that the file is not read-only.
+
+    **If per-city settings disappear:** this means the save file was not written correctly, or you loaded a different save. Always save the city after making TM:PE changes, and verify you are opening the correct save.
+
+    **If you run multiple TM:PE versions:** having both STABLE and TEST subscribed can cause each to read and overwrite the same config file. Keep only one version active at a time.
+  </Accordion>
+
+  <Accordion title="Mod not activating after a game update">
+    After a Cities: Skylines patch, TM:PE may show as inactive or produce errors on load.
+
+    1. Open the **Content Manager** in the Cities: Skylines main menu.
+    2. Find TM:PE in the **Mods** list. If it shows a warning icon, disable it, then re-enable it.
+    3. If re-enabling does not help, unsubscribe from the mod on Steam, restart Steam, then resubscribe.
+    4. Check that your game version matches the version TM:PE was built for. TM:PE is only tested against the **latest** Cities: Skylines release. If your game is out of date, update it first.
+    5. Check the [CHANGELOG](https://github.com/CitiesSkylinesMods/TMPE/blob/master/CHANGELOG.md) or Steam Workshop comments to confirm that a compatible TM:PE version has been released for the new game patch.
+  </Accordion>
+
+  <Accordion title="Performance issues after enabling Advanced Vehicle AI">
+    **Advanced Vehicle AI** recalculates paths for every vehicle to spread traffic across the network. On large or heavily built cities this can noticeably reduce simulation speed.
+
+    Steps to reduce the impact:
+
+    - Lower **Dynamic Lane Selection** intensity in TM:PE → **Gameplay** settings. Start around 50 % and test.
+    - Reduce the number of vehicles in the city (lower the **Vehicle count** slider in game options).
+    - Set the game simulation speed to **1×** during heavy traffic — the AI runs proportionally faster relative to real time at lower simulation speeds.
+    - If you primarily need speed limit and lane control features, you can disable Advanced Vehicle AI entirely; those features work without it.
+  </Accordion>
+
+  <Accordion title="Where to find TMPE.log">
+    TM:PE writes a dedicated log file (`TMPE.log`) separate from the main game log. Its location depends on your operating system:
+
+    | Platform | Location |
+    |----------|----------|
+    | **Windows** | Same folder as `output_log.txt` — typically `C:\Program Files (x86)\Steam\steamapps\common\Cities_Skylines\` |
+    | **Mac** | Same folder as `Player.log` (updated in v11.9.2.0 to avoid a `TargetInvocationException`) |
+    | **Linux** | `~/.config/unity3d/Colossal Order/Cities: Skylines/TMPE.log` |
+
+    Include this file whenever you [report a bug](/troubleshooting/reporting-bugs). It is the single most useful piece of information for diagnosing problems.
+  </Accordion>
+</AccordionGroup>
+
+## Support policy
+
+<Note>
+The TM:PE team supports only the **latest version of TM:PE v11 STABLE** or **TM:PE v11 TEST**, running on a legitimately purchased and up-to-date copy of Cities: Skylines. Support is not available for older mod versions or pirated copies of the game.
+</Note>
+
+<Warning>
+Do not use any mod published by **Holy Water**. These mods have been confirmed to contain malware specifically targeting the TM:PE development team. If you have any Holy Water mods installed, remove them immediately and do not expect support while they are present.
+</Warning>
+
+If your issue is not listed here, see [Report a TM:PE bug effectively](/troubleshooting/reporting-bugs) for how to get help from the community.

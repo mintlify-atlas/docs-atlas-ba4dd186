@@ -1,0 +1,461 @@
+---
+title: "TM:PE API manager interfaces reference"
+description: "Full method signatures, enum values, and C# usage examples for every documented TM:PE manager interface available through Implementations.ManagerFactory."
+---
+
+Each manager you retrieve from `Implementations.ManagerFactory` implements a dedicated interface defined in the `TMPE.API` assembly. This page covers the managers that are most useful for mod integration, with their exact C# signatures taken from the source interfaces and annotated usage examples. All managers are accessed through the factory — call `Implementations.ManagerFactory` after TM:PE has loaded and hold a reference to the specific interface you need.
+
+```csharp
+using TrafficManager.API;
+
+var factory = Implementations.ManagerFactory;
+```
+
+---
+
+## Enums
+
+Before diving into the managers, these enum types appear throughout the API as parameters and return values.
+
+<AccordionGroup>
+  <Accordion title="LaneArrows — direction flags for lane arrows">
+    `LaneArrows` is a `[Flags]` enum compatible with `NetLane.Flags`. Values can be combined with bitwise OR.
+
+    ```csharp
+    using TrafficManager.API.Traffic.Enums;
+
+    [Flags]
+    public enum LaneArrows {
+        None             = 0,
+        Forward          = NetLane.Flags.Forward,
+        Left             = NetLane.Flags.Left,
+        Right            = NetLane.Flags.Right,
+        LeftForward      = Left | Forward,
+        LeftRight        = Left | Right,
+        ForwardRight     = Forward | Right,
+        LeftForwardRight = Left | Forward | Right,
+    }
+    ```
+
+    Use bitwise AND to test for a specific direction:
+
+    ```csharp
+    LaneArrows arrows = factory.LaneArrowManager.GetFinalLaneArrows(laneId);
+    bool canGoLeft = (arrows & LaneArrows.Left) != 0;
+    ```
+  </Accordion>
+
+  <Accordion title="PriorityType — junction priority sign values">
+    ```csharp
+    using TrafficManager.API.Traffic.Enums;
+
+    public enum PriorityType {
+        None  = 0,  // no priority sign
+        Main  = 1,  // priority road (main road)
+        Stop  = 2,  // stop sign
+        Yield = 3,  // yield sign
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="ExtVehicleType — extended vehicle type flags">
+    `ExtVehicleType` is a `[Flags]` enum. Individual types can be combined with bitwise OR to form masks.
+
+    ```csharp
+    using TrafficManager.API.Traffic.Enums;
+
+    [Flags]
+    public enum ExtVehicleType {
+        None                  = 0,
+        PassengerCar          = 1,
+        Bus                   = 1 << 1,
+        Taxi                  = 1 << 2,
+        CargoTruck            = 1 << 3,
+        Service               = 1 << 4,
+        Emergency             = 1 << 5,
+        PassengerTrain        = 1 << 6,
+        CargoTrain            = 1 << 7,
+        Tram                  = 1 << 8,
+        Bicycle               = 1 << 9,
+        Pedestrian            = 1 << 10,
+        PassengerShip         = 1 << 11,
+        CargoShip             = 1 << 12,
+        PassengerPlane        = 1 << 13,
+        Helicopter            = 1 << 14,
+        CableCar              = 1 << 15,
+        PassengerFerry        = 1 << 16,
+        PassengerBlimp        = 1 << 17,
+        CargoPlane            = 1 << 18,
+        Trolleybus            = 1 << 19,
+
+        // Composite masks
+        Plane                 = PassengerPlane | CargoPlane,
+        Ship                  = PassengerShip | CargoShip,
+        CargoVehicle          = CargoTruck | CargoTrain | CargoShip | CargoPlane,
+        PublicTransport       = Bus | Taxi | Tram | PassengerTrain | Trolleybus,
+        RoadPublicTransport   = Bus | Taxi | Trolleybus,
+        RoadVehicle           = PassengerCar | Bus | Taxi | CargoTruck | Service | Emergency,
+        RailVehicle           = PassengerTrain | CargoTrain,
+        NonTransportRoadVehicle = RoadVehicle & ~PublicTransport,
+        Ferry                 = PassengerFerry,
+        Blimp                 = PassengerBlimp,
+    }
+    ```
+
+    <Tip>
+      Use the composite masks (e.g., `ExtVehicleType.RoadVehicle`) instead of combining individual flags manually to avoid future compatibility issues when new vehicle types are added.
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Manager interfaces
+
+<AccordionGroup>
+  <Accordion title="ISpeedLimitManager — read effective speed limits">
+    Retrieve the effective speed limit for a lane, accounting for both TM:PE overrides and road defaults.
+
+    **Key properties**
+
+    ```csharp
+    public interface ISpeedLimitManager {
+        NetInfo.LaneType    LaneTypes    { get; }  // lane types this manager handles
+        VehicleInfo.VehicleType VehicleTypes { get; }  // vehicle types this manager handles
+    }
+    ```
+
+    **Key methods**
+
+    ```csharp
+    // Preferred: pass the LaneInfo for correct results (the overload below is obsolete)
+    float GetGameSpeedLimit(uint laneId, NetInfo.Lane laneInfo);
+
+    // Obsolete: use the overload above instead
+    [Obsolete]
+    float GetGameSpeedLimit(uint laneId);
+    ```
+
+    The returned value is in game speed units. Use `ApiConstants` to convert:
+
+    ```csharp
+    using TrafficManager.API.Traffic;
+
+    // ApiConstants.SPEED_TO_KMPH = 50.0f
+    // ApiConstants.SPEED_TO_MPH  = 31.06f
+
+    float gameUnits = factory.SpeedLimitManager.GetGameSpeedLimit(laneId, laneInfo);
+    float kmh = gameUnits * ApiConstants.SPEED_TO_KMPH;
+    float mph = gameUnits * ApiConstants.SPEED_TO_MPH;
+    ```
+  </Accordion>
+
+  <Accordion title="ILaneArrowManager — read combined lane arrow directions">
+    Query the effective lane arrows for a lane, combining the road's default arrows with any custom TM:PE overrides set by the player.
+
+    **Key properties**
+
+    ```csharp
+    public interface ILaneArrowManager {
+        NetInfo.LaneType        LaneTypes    { get; }  // lane types for all road vehicles
+        VehicleInfo.VehicleType VehicleTypes { get; }  // vehicle types for all road vehicles
+    }
+    ```
+
+    **Key methods**
+
+    ```csharp
+    // Returns the final effective arrows for the given lane
+    LaneArrows GetFinalLaneArrows(uint laneId);
+    ```
+
+    **Example**
+
+    ```csharp
+    using TrafficManager.API.Traffic.Enums;
+
+    ILaneArrowManager arrowMgr = factory.LaneArrowManager;
+    LaneArrows arrows = arrowMgr.GetFinalLaneArrows(laneId);
+
+    bool forwardAllowed = (arrows & LaneArrows.Forward) != 0;
+    bool leftAllowed    = (arrows & LaneArrows.Left)    != 0;
+    bool rightAllowed   = (arrows & LaneArrows.Right)   != 0;
+    ```
+  </Accordion>
+
+  <Accordion title="IJunctionRestrictionsManager — get and set junction traffic rules">
+    Read or modify the traffic rules that apply at a segment end (the point where a segment meets a node). Rules cover u-turns, turn-on-red, lane changing when going straight, entering blocked junctions, and pedestrian crossings.
+
+    Each rule has three method families:
+    - `Is<Rule>Configurable` — checks whether the rule can be customised at all at that segment end.
+    - `Is<Rule>Allowed` / `Get<Rule>` — reads the current effective value (`bool`) or the raw flag (`TernaryBool`).
+    - `Set<Rule>Allowed` / `Toggle<Rule>Allowed` — writes a value or toggles it.
+
+    **Configurable checks**
+
+    ```csharp
+    bool IsUturnAllowedConfigurable(ushort segmentId, bool startNode, ref NetNode node);
+    bool IsNearTurnOnRedAllowedConfigurable(ushort segmentId, bool startNode, ref NetNode node);
+    bool IsFarTurnOnRedAllowedConfigurable(ushort segmentId, bool startNode, ref NetNode node);
+    bool IsLaneChangingAllowedWhenGoingStraightConfigurable(ushort segmentId, bool startNode, ref NetNode node);
+    bool IsEnteringBlockedJunctionAllowedConfigurable(ushort segmentId, bool startNode, ref NetNode node);
+    bool IsPedestrianCrossingAllowedConfigurable(ushort segmentId, bool startNode, ref NetNode node);
+    ```
+
+    **Read effective values**
+
+    ```csharp
+    bool IsUturnAllowed(ushort segmentId, bool startNode);
+    bool IsNearTurnOnRedAllowed(ushort segmentId, bool startNode);
+    bool IsFarTurnOnRedAllowed(ushort segmentId, bool startNode);
+    bool IsTurnOnRedAllowed(bool near, ushort segmentId, bool startNode);
+    bool IsLaneChangingAllowedWhenGoingStraight(ushort segmentId, bool startNode);
+    bool IsEnteringBlockedJunctionAllowed(ushort segmentId, bool startNode);
+    bool IsPedestrianCrossingAllowed(ushort segmentId, bool startNode);
+    ```
+
+    **Write values**
+
+    ```csharp
+    // Set with a bool
+    bool SetUturnAllowed(ushort segmentId, bool startNode, bool value);
+    bool SetLaneChangingAllowedWhenGoingStraight(ushort segmentId, bool startNode, bool value);
+    bool SetPedestrianCrossingAllowed(ushort segmentId, bool startNode, bool value);
+    bool SetEnteringBlockedJunctionAllowed(ushort segmentId, bool startNode, bool value);
+    bool SetNearTurnOnRedAllowed(ushort segmentId, bool startNode, bool value);
+    bool SetFarTurnOnRedAllowed(ushort segmentId, bool startNode, bool value);
+
+    // Set with TernaryBool (pass TernaryBool.Undefined to remove the override)
+    bool SetUturnAllowed(ushort segmentId, bool startNode, TernaryBool value);
+
+    // Toggle
+    bool ToggleUturnAllowed(ushort segmentId, bool startNode);
+    bool TogglePedestrianCrossingAllowed(ushort segmentId, bool startNode);
+
+    // Remove all custom restrictions for a segment end
+    bool ClearSegmentEnd(ushort segmentId, bool startNode);
+    ```
+
+    **Example — disable u-turns on a segment**
+
+    ```csharp
+    IJunctionRestrictionsManager jrm = factory.JunctionRestrictionsManager;
+
+    // Check the rule is customisable before writing
+    ref NetNode node = ref NetManager.instance.m_nodes.m_buffer[nodeId];
+    if (jrm.IsUturnAllowedConfigurable(segmentId, startNode: true, ref node)) {
+        bool success = jrm.SetUturnAllowed(segmentId, startNode: true, value: false);
+    }
+    ```
+
+    <Note>
+      All `Set*` and `Toggle*` methods return `true` on success and `false` when the rule is not configurable at that segment end or when setting fails for another reason.
+    </Note>
+  </Accordion>
+
+  <Accordion title="ITrafficPriorityManager — query priority signs at junctions">
+    Check whether a node has priority signs assigned and what sign type each segment end carries.
+
+    **Key methods**
+
+    ```csharp
+    using TrafficManager.API.Traffic.Enums;
+
+    // Returns the PriorityType assigned to a segment end (None if no sign is set)
+    PriorityType GetPrioritySign(ushort segmentId, bool startNode);
+
+    // Returns true if any priority sign is assigned at the given node
+    bool HasNodePrioritySign(ushort nodeId);
+
+    // Determines whether a vehicle must yield to other vehicles at this node
+    bool HasPriority(ushort vehicleId,
+                     ref Vehicle vehicle,
+                     ref PathUnit.Position curPos,
+                     ref ExtSegmentEnd curEnd,
+                     ushort transitNodeId,
+                     bool startNode,
+                     ref PathUnit.Position nextPos,
+                     ref NetNode transitNode);
+    ```
+
+    **Example — read the priority sign at a segment end**
+
+    ```csharp
+    using TrafficManager.API.Traffic.Enums;
+
+    ITrafficPriorityManager priorityMgr = factory.TrafficPriorityManager;
+
+    if (priorityMgr.HasNodePrioritySign(nodeId)) {
+        PriorityType sign = priorityMgr.GetPrioritySign(segmentId, startNode: false);
+
+        switch (sign) {
+            case PriorityType.Main:  /* priority road */  break;
+            case PriorityType.Stop:  /* stop sign     */  break;
+            case PriorityType.Yield: /* yield sign    */  break;
+            case PriorityType.None:  /* no sign       */  break;
+        }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="IVehicleRestrictionsManager — get and set allowed vehicle types per lane">
+    Read which `ExtVehicleType` flags are allowed on a lane or segment, and add or remove individual vehicle types.
+
+    **Key methods**
+
+    ```csharp
+    using TrafficManager.API.Traffic.Enums;
+
+    // Get the combined allowed-vehicle mask for all lanes of a segment at a given node
+    ExtVehicleType GetAllowedVehicleTypes(
+        ushort segmentId,
+        ushort nodeId,
+        VehicleRestrictionsMode busLaneMode);
+
+    // Get the allowed-vehicle mask for a specific lane
+    ExtVehicleType GetAllowedVehicleTypes(
+        ushort segmentId,
+        NetInfo segmentInfo,
+        uint laneIndex,
+        NetInfo.Lane laneInfo,
+        VehicleRestrictionsMode busLaneMode);
+
+    // Get the default allowed-vehicle mask for a specific lane
+    ExtVehicleType GetDefaultAllowedVehicleTypes(
+        ushort segmentId,
+        NetInfo segmentInfo,
+        uint laneIndex,
+        NetInfo.Lane laneInfo,
+        VehicleRestrictionsMode busLaneMode);
+
+    // Add a vehicle type to a lane's allowlist
+    void AddAllowedType(
+        ushort segmentId,
+        NetInfo segmentInfo,
+        uint laneIndex,
+        uint laneId,
+        NetInfo.Lane laneInfo,
+        ExtVehicleType vehicleType);
+
+    // Remove a vehicle type from a lane's allowlist
+    void RemoveAllowedType(
+        ushort segmentId,
+        NetInfo segmentInfo,
+        uint laneIndex,
+        uint laneId,
+        NetInfo.Lane laneInfo,
+        ExtVehicleType vehicleType);
+
+    // Toggle a vehicle type (add if absent, remove if present)
+    void ToggleAllowedType(
+        ushort segmentId,
+        NetInfo segmentInfo,
+        uint laneIndex,
+        uint laneId,
+        NetInfo.Lane laneInfo,
+        ExtVehicleType vehicleType,
+        bool add);
+
+    // Convenience checkers
+    bool IsPassengerCarAllowed(ExtVehicleType? allowedTypes);
+    bool IsBusAllowed(ExtVehicleType? allowedTypes);
+    bool IsCargoTruckAllowed(ExtVehicleType? allowedTypes);
+    bool IsEmergencyAllowed(ExtVehicleType? allowedTypes);
+    bool IsAllowed(ExtVehicleType? allowedTypes, ExtVehicleType vehicleType);
+    ```
+
+    **Example — check if cargo trucks are allowed on a lane**
+
+    ```csharp
+    using TrafficManager.API.Traffic.Enums;
+
+    IVehicleRestrictionsManager vrm = factory.VehicleRestrictionsManager;
+
+    ExtVehicleType allowed = vrm.GetAllowedVehicleTypes(
+        segmentId, segmentInfo, laneIndex, laneInfo,
+        VehicleRestrictionsMode.Configured);
+
+    bool truckAllowed = vrm.IsCargoTruckAllowed(allowed);
+    ```
+  </Accordion>
+
+  <Accordion title="ILaneConnectionManager — query custom lane routing connections">
+    Check whether custom lane-to-lane connections exist at a node or for a specific source lane.
+
+    **Key properties**
+
+    ```csharp
+    public interface ILaneConnectionManager {
+        NetInfo.LaneType        LaneTypes    { get; }
+        VehicleInfo.VehicleType VehicleTypes { get; }
+    }
+    ```
+
+    **Key methods**
+
+    ```csharp
+    // Returns true if there are any custom connections at the given node
+    bool HasNodeConnections(ushort nodeId);
+
+    // Returns true if the source lane has any outgoing custom connections at the given segment end
+    bool HasConnections(uint sourceLaneId, bool startNode);
+
+    // Returns true if traffic may flow from sourceLaneId to targetLaneId
+    bool AreLanesConnected(uint sourceLaneId, uint targetLaneId, bool sourceStartNode);
+
+    // Returns true if there are u-turn connections for the given segment end
+    bool HasUturnConnections(ushort segmentId, bool startNode);
+    ```
+
+    **Example — check if two lanes are connected**
+
+    ```csharp
+    ILaneConnectionManager lcm = factory.LaneConnectionManager;
+
+    if (lcm.HasNodeConnections(nodeId)) {
+        bool connected = lcm.AreLanesConnected(
+            sourceLaneId: laneA,
+            targetLaneId: laneB,
+            sourceStartNode: true);
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="ITrafficLightSimulationManager — check timed traffic light state">
+    Determine whether a node has a timed traffic light simulation active.
+
+    **Key methods**
+
+    ```csharp
+    // Returns true if a timed simulation exists at the node (active or paused)
+    bool HasTimedSimulation(ushort nodeId);
+
+    // Returns true only if the timed simulation is currently running
+    bool HasActiveTimedSimulation(ushort nodeId);
+    ```
+
+    **Example — skip processing nodes that have active timed lights**
+
+    ```csharp
+    ITrafficLightSimulationManager tlsm = factory.TrafficLightSimulationManager;
+
+    if (tlsm.HasActiveTimedSimulation(nodeId)) {
+        // Timed light is running — do not overwrite its state
+        return;
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="API overview" icon="rocket" href="/dev/api-overview">
+    Set up your project, access the factory, and see the full manager list.
+  </Card>
+  <Card title="Detect TM:PE version" icon="tag" href="/dev/api-version-detection">
+    Gate API calls behind a version check to handle older TM:PE installations.
+  </Card>
+</CardGroup>

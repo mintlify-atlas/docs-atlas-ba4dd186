@@ -1,0 +1,170 @@
+---
+title: "Attach a debugger to Cities: Skylines for TM:PE"
+description: "Replace mono.dll with a Unity debug build, set environment variables, and use dnSpy to attach a live debugger to Cities: Skylines on Windows."
+---
+
+Cities: Skylines runs on Mono, which means you can attach a .NET debugger to a live game session and set breakpoints directly in your mod code. The process requires replacing the game's `mono.dll` with a debug-enabled build and using dnSpy to connect. Note that this only works on Windows — if you are on a Mac, set up a Boot Camp partition and use that. Expect a significant frame-rate drop while the debugger is attached.
+
+<Warning>
+Attaching a debugger can significantly reduce frame rate and cause lots of lag. Only do this during active debugging sessions; revert `mono.dll` when you are done to restore normal performance.
+</Warning>
+
+## Setup
+
+You only need to follow these steps once.
+
+<Steps>
+
+<Step title="Download dnSpy and Unity debugging files">
+
+Get the following archives from [`https://github.com/0xd4d/dnSpy/releases`](https://github.com/0xd4d/dnSpy/releases):
+
+- `dnSpy-net472.zip` (or a later version)
+- `Unity-debugging-5.x.zip`
+
+</Step>
+
+<Step title="Back up the original mono.dll">
+
+Navigate to:
+
+```text
+C:\Program Files (x86)\Steam\steamapps\common\Cities_Skylines\Cities_Data\Mono\
+```
+
+Adjust the path if you installed the game in a different location.
+
+Make a backup of `mono.dll` — for example, rename it to `mono-backup.dll`.
+
+</Step>
+
+<Step title="Replace mono.dll with the debug version">
+
+Make sure the game is **not** running, then:
+
+1. Open `Unity-debugging-5.x.zip`.
+2. Navigate inside the archive to `Unity-debugging\unity-5.6.7\win64\`.
+
+   <Note>
+   Check the first line of your `output_log.txt` to confirm which version of Unity the game is using, and pick the matching folder inside the archive.
+   </Note>
+
+3. Copy `mono.dll` from that folder to:
+
+   ```text
+   C:\Program Files (x86)\Steam\steamapps\common\Cities_Skylines\Cities_Data\Mono\
+   ```
+
+4. Launch the game to verify it starts correctly.
+   - If the game does not start, delete the downloaded `mono.dll` and restore your backup.
+
+5. Close the game before continuing.
+
+</Step>
+
+<Step title="Add environment variables">
+
+1. Press **Win+R** to open the Run dialog, enter `sysdm.cpl`, and click **OK**.
+2. On the **Advanced** tab, click **Environment Variables...**.
+3. Add the following two variables:
+
+| Key | Value |
+|---|---|
+| `DNSPY_UNITY_DBG` | `--debugger-agent=transport=dt_socket,server=y,address=127.0.0.1:55555,defer=y,no-hide-debugger` |
+| `DNSPY_UNITY_DBG2` | `--debugger-agent=transport=dt_socket,server=y,address=127.0.0.1:55555,suspend=n,no-hide-debugger` |
+
+</Step>
+
+<Step title="Extract dnSpy">
+
+Extract `dnSpy-net472.zip` to any folder — for example, a `dnSpy/` folder on your desktop.
+
+</Step>
+
+</Steps>
+
+## Debugging session
+
+Follow these steps each time you want to debug the game.
+
+<Steps>
+
+<Step title="Launch dnSpy">
+
+Run `dnSpy.exe`.
+
+In the **Assembly Explorer** on the left, remove any `.dll` files that are already listed:
+
+1. Click any listed entry.
+2. Press `Ctrl+A` to select all.
+3. Press `Delete` to remove them.
+
+</Step>
+
+<Step title="Attach dnSpy to the game">
+
+1. Start `Cities.exe`.
+2. **Alt+Tab** back to dnSpy.
+3. Press **F5** (or click **Start**) and configure:
+   - **Debug Engine:** `Unity (Connect)`
+   - **Port:** `55555`
+4. Click **OK**. You should see an **orange status bar** at the bottom with the text `Running...`
+
+</Step>
+
+<Step title="Load all modules">
+
+1. From the **Debug** menu, choose **Windows → Modules** (`Ctrl+Shift+A`).
+2. You should see many `.dll` files and some `data-00...` entries.
+3. Right-click any entry, select **Open All Modules**, and click **OK`.
+   - The game may hang for a few seconds while modules load.
+4. In **Assembly Explorer**, you should now see all `.dll` files loaded in-game.
+5. Right-click any assembly and choose **Sort Assemblies** to make the list easier to navigate.
+
+You are now debugging. Set breakpoints in any assembly shown in Assembly Explorer.
+
+<Note>
+There will be duplicate entries for some libraries. Only one copy of each will have working breakpoints — after sorting, it is usually the first instance. Once you identify the working copy, you can safely delete the duplicate from Assembly Explorer.
+
+Do not rebuild your mod DLL while the game is running. If you do, clear Assembly Explorer and open all modules again (which brings the duplicates back).
+</Note>
+
+</Step>
+
+</Steps>
+
+## Reverting to normal
+
+When you are done debugging, restore full game performance:
+
+<Steps>
+
+<Step title="Exit the game" />
+
+<Step title="Restore the original mono.dll">
+
+Replace the debug `mono.dll` in `Cities_Data\Mono\` with your backup (`mono-backup.dll`).
+
+</Step>
+
+<Step title="Relaunch the game">
+
+The game will run at full performance again.
+
+</Step>
+
+</Steps>
+
+## Tips
+
+<AccordionGroup>
+
+<Accordion title="Finding a class, method, or field">
+Use the **Search** tab (`Ctrl+Shift+K`) to locate any class, property, field, or method across all loaded assemblies.
+</Accordion>
+
+<Accordion title="Finding where a method is called">
+Right-click any method definition in the Assembly Explorer and select **Analyze** to see all call sites.
+</Accordion>
+
+</AccordionGroup>

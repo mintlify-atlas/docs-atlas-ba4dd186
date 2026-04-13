@@ -1,97 +1,71 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "TM:PE: Take full control of Cities: Skylines traffic"
+description: "Traffic Manager: President Edition (TM:PE) is a Cities: Skylines mod giving you precise control over lanes, lights, speed limits, and vehicle routing."
 ---
 
-## Setting up
+TM:PE (Traffic Manager: President Edition) is an open-source mod for Cities: Skylines that replaces the game's simplistic traffic rules with a comprehensive set of tools. From setting custom speed limits on individual lanes to programming timed traffic lights and controlling which vehicle types can use each road, TM:PE puts you firmly in charge of your city's traffic network.
 
-Get your documentation site up and running in minutes.
-
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Install TM:PE from Steam Workshop or as a standalone binary. Get up and running in minutes.
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Traffic Tools" icon="traffic-light" href="/tools/speed-limits">
+    Explore the full suite of tools — speed limits, lane arrows, traffic lights, priority signs, and more.
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Settings & Options" icon="sliders" href="/settings/overview">
+    Tune AI behavior, simulation accuracy, and keybinds to match your playstyle.
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Mod Integration API" icon="code" href="/dev/api-overview">
+    Integrate your own mod with TM:PE using the public C# API.
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## Key features
 
-Everything you need to create world-class documentation.
+<CardGroup cols={2}>
+  <Card title="Speed limits" icon="gauge-high" href="/tools/speed-limits">
+    Override the default speed limit on any lane or segment, in km/h or mph.
+  </Card>
+  <Card title="Lane arrows" icon="arrows-left-right" href="/tools/lane-arrows">
+    Control which directions vehicles may turn from each lane at intersections.
+  </Card>
+  <Card title="Lane connectors" icon="code-fork" href="/tools/lane-connectors">
+    Manually wire source lanes to destination lanes for surgical routing control.
+  </Card>
+  <Card title="Traffic lights" icon="traffic-light" href="/tools/traffic-lights">
+    Place, remove, and program timed traffic lights with custom step sequences.
+  </Card>
+  <Card title="Priority signs" icon="triangle-exclamation" href="/tools/priority-signs">
+    Assign yield, stop, or main-road priority at any junction.
+  </Card>
+  <Card title="Junction restrictions" icon="ban" href="/tools/junction-restrictions">
+    Toggle u-turns, pedestrian crossings, lane changes, and blocked-junction rules.
+  </Card>
+  <Card title="Vehicle restrictions" icon="truck" href="/tools/vehicle-restrictions">
+    Limit road or lane access to specific vehicle types such as buses or cargo trucks.
+  </Card>
+  <Card title="Parking restrictions" icon="square-parking" href="/tools/parking-restrictions">
+    Disable roadside parking on specific segments to keep traffic flowing.
+  </Card>
+</CardGroup>
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+## Getting started
 
-## Need inspiration?
+<Steps>
+  <Step title="Install TM:PE">
+    Subscribe to [TM:PE v11 STABLE](https://steamcommunity.com/sharedfiles/filedetails/?id=1637663252) on Steam Workshop, or download binaries for non-Steam installs. See the [Installation guide](/installation) for full instructions.
+  </Step>
+  <Step title="Enable the mod">
+    In Cities: Skylines, open **Content Manager → Mods** and enable **TM:PE**. The mod activates automatically when you load a city.
+  </Step>
+  <Step title="Open the toolbar">
+    While in-game, click the TM:PE button in the road toolbar (or press the configured hotkey) to open the traffic management panel.
+  </Step>
+  <Step title="Start optimizing">
+    Select any traffic tool from the panel and click on roads or intersections in your city. Changes take effect immediately and are saved with your city.
+  </Step>
+</Steps>
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<Note>
+  TM:PE is only supported on the latest version of Cities: Skylines. Always keep both the game and the mod updated for the best experience.
+</Note>

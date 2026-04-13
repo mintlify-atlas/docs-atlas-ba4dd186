@@ -1,0 +1,63 @@
+---
+title: "Priority signs: yield, stop, and main road rules"
+description: "Assign yield, stop, and main road priority signs to junction approaches so that vehicles on minor roads give way to traffic on the main road."
+---
+
+The Priority Signs tool lets you designate which roads have the right-of-way at an intersection and which must yield or stop. Assigning a main road and side road relationship causes vehicles on the minor approach to check for gaps before entering the junction, producing more realistic behavior at T-junctions, crossroads, and roundabout entries without needing traffic lights.
+
+<Steps>
+  <Step title="Activate the Priority Signs tool">
+    Click the **Priority Signs** button in the TM:PE main menu. Colored sign icons appear on all approaches at junctions that already have priority rules set.
+  </Step>
+  <Step title="Click a road segment near a junction">
+    Hover over a road approaching the junction you want to configure. The segment highlights. Click to cycle through the available priority types for that approach. The sign icon on the road updates with each click.
+  </Step>
+  <Step title="Assign signs to all relevant approaches">
+    Configure every arm of the junction to ensure consistent behavior. A typical T-junction needs the main road marked with **Main Road** on both arms, and the side road marked with **Yield** or **Stop**.
+  </Step>
+  <Step title="Use mass-edit shortcuts for faster setup">
+    Hold **Shift** and click a segment to apply priority signs automatically along an entire road between junctions. Hold **Ctrl + Shift** and click to have TM:PE detect and configure the road as a priority road or roundabout automatically. Hold **Ctrl** and click a junction node to configure all approaches at that node for a high-priority junction layout.
+
+    <Tip>
+      For roundabouts, **Ctrl + Shift** click one segment of the loop and TM:PE traverses the entire roundabout, setting the circulating road to Main Road and all entries to Yield.
+    </Tip>
+  </Step>
+  <Step title="Undo a mass edit">
+    After a mass edit, the **Undo** option appears in the priority signs cycle. Click the affected segment and cycle to **Undo** to restore the state before the bulk operation.
+  </Step>
+  <Step title="Remove a sign">
+    Click the signed approach and cycle back to **None** to remove the priority rule from that approach.
+  </Step>
+  <Step title="Exit the tool">
+    Right-click or click the Priority Signs button again to deactivate.
+  </Step>
+</Steps>
+
+<AccordionGroup>
+  <Accordion title="Priority sign types">
+    | Sign | Effect |
+    |---|---|
+    | **None** | No priority rule; the game's default conflict resolution applies |
+    | **Main Road** | Vehicles on this approach have right-of-way; cross-traffic must yield to them |
+    | **Yield** | Vehicles must slow and give way to main-road traffic if the junction is occupied, but may proceed when clear |
+    | **Stop** | Vehicles must come to a full stop before entering the junction, then yield to main-road traffic |
+  </Accordion>
+
+  <Accordion title="Mass-edit modes">
+    | Shortcut | Behavior |
+    |---|---|
+    | **Shift + click segment** | Applies the current mass-edit mode along the entire road |
+    | **Ctrl + click node** | Sets up a high-priority junction (all approaches from the main road get Main Road, all side approaches get Stop) |
+    | **Ctrl + Shift + click segment** | Detects roundabout or priority road and sets signs automatically |
+
+    The mass-edit mode cycles through: **Main/Yield**, **Main/Stop**, **Yield/Main**, **Stop/Main**, and **Undo**.
+  </Accordion>
+
+  <Accordion title="Compatibility with traffic lights">
+    Priority signs and traffic lights are mutually exclusive at the same junction. Adding a traffic light (via the Toggle Traffic Lights tool or a timed program) automatically removes any priority signs at that junction. Similarly, setting a priority sign removes any vanilla traffic light.
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+  Priority sign assignments are saved with the city. If TM:PE is removed, junctions fall back to the game's default right-of-way behavior. All priority rules are lost. Rebuilding a segment also clears its priority sign.
+</Note>

@@ -1,0 +1,92 @@
+---
+title: "Report a TM:PE bug effectively"
+description: "How to submit a useful TM:PE bug report: what information to collect, where to find TMPE.log, and how to write clear reproduction steps."
+---
+
+A well-written bug report helps the TM:PE team reproduce and fix the problem far faster than a vague description. Before posting, take a few minutes to gather the right information — it is the single biggest factor in whether an issue gets resolved quickly.
+
+<Steps>
+  <Step title="Check you are on the latest stable version">
+    TM:PE is only tested against the latest Cities: Skylines release. Before reporting, confirm you are using **TM:PE v11 STABLE** or **TM:PE v11 TEST** — the current versions are listed on the [Steam Workshop page](https://steamcommunity.com/sharedfiles/filedetails/?id=1637663252).
+
+    If you are on an older version, update first and check whether the problem still exists. Many bugs are fixed in newer releases.
+  </Step>
+
+  <Step title="Search existing GitHub issues">
+    Your bug may already be reported or fixed. Search the [TM:PE issue tracker](https://github.com/CitiesSkylinesMods/TMPE/issues) before opening a new issue.
+
+    Search tips:
+    - Use keywords from the error message or the feature that is broken (e.g. `timed traffic light`, `despawn`, `lane connector`).
+    - Filter by **Open** issues first, then check **Closed** issues — a closed issue may link to a fix in an upcoming release.
+    - If you find an existing report, add a comment with your `TMPE.log` and any additional detail rather than opening a duplicate.
+  </Step>
+
+  <Step title="Collect the required information">
+    Gather these details before writing your report:
+
+    | Item | Where to find it |
+    |------|-----------------|
+    | **Cities: Skylines version** | Main menu → bottom-left corner, or `output_log.txt` first line |
+    | **TM:PE version** | In-game mod options panel, top of the TM:PE settings window |
+    | **TMPE.log** | See the table below for your platform |
+    | **List of other active mods** | Content Manager → Mods → export or screenshot |
+    | **Save file** (optional but useful) | `%APPDATA%\Colossal Order\Cities_Skylines\Saves\` on Windows |
+
+    **TMPE.log locations:**
+
+    | Platform | Path |
+    |----------|------|
+    | **Windows** | Same folder as `output_log.txt` — typically `C:\Program Files (x86)\Steam\steamapps\common\Cities_Skylines\` |
+    | **Mac** | Same folder as `Player.log` |
+    | **Linux** | `~/.config/unity3d/Colossal Order/Cities: Skylines/TMPE.log` |
+
+    Always attach the full `TMPE.log` file — do not paste excerpts unless asked. The context around an error is often as important as the error itself.
+  </Step>
+
+  <Step title="Write clear reproduction steps">
+    Describe exactly what you did before the problem appeared. A good reproduction sequence looks like this:
+
+    1. Loaded save "My City" with the listed mods active.
+    2. Opened the **Speed Limits** tool and set a highway segment to 120 km/h.
+    3. Saved the city and reloaded.
+    4. Speed limit had reset to the road default.
+
+    Include:
+    - What you expected to happen.
+    - What actually happened.
+    - Whether the problem is consistent or intermittent.
+    - Whether it happens in a new city or only in an existing save.
+
+    If you can reproduce the bug with fewer mods active, note which mods are necessary to trigger it.
+  </Step>
+
+  <Step title="Submit on GitHub Issues">
+    Open a new issue at [github.com/CitiesSkylinesMods/TMPE/issues](https://github.com/CitiesSkylinesMods/TMPE/issues).
+
+    - Use a short, specific title: `Speed limits reset after save/reload` is better than `Bug with speed limits`.
+    - Fill in the issue template if one appears — it prompts for the information the team needs.
+    - Attach `TMPE.log` as a file (drag it into the text box). If the file is very large, compress it as a `.zip` first.
+    - Do not include personal information in your save file before uploading.
+  </Step>
+</Steps>
+
+<Tip>
+If you are running a **DEBUG build** of TM:PE, the mod settings panel includes an in-game debug menu where you can enable additional log switches in `TMPE_GlobalConfig.xml`. Enabling the relevant switch before reproducing your bug produces a much more detailed `TMPE.log`. See the [Logging guide](https://github.com/CitiesSkylinesMods/TMPE/blob/master/docs/LOGGING.md) for details.
+</Tip>
+
+## Support policy
+
+<Note>
+The TM:PE team provides support only for the **latest version of TM:PE v11 STABLE** or **TM:PE v11 TEST**, used with a legitimately purchased and up-to-date copy of Cities: Skylines. Reports against older mod versions or pirated copies of the game will not be investigated.
+</Note>
+
+## Get help from the community
+
+<CardGroup cols={2}>
+  <Card title="GitHub Issues" icon="github" href="https://github.com/CitiesSkylinesMods/TMPE/issues">
+    Search existing reports or open a new bug on the official issue tracker.
+  </Card>
+  <Card title="Discord" icon="discord" href="https://discord.gg/faKUnST">
+    Ask questions and get real-time help from the TM:PE community and contributors.
+  </Card>
+</CardGroup>

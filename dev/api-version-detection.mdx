@@ -1,0 +1,122 @@
+---
+title: "Detect TM:PE version in your mod"
+description: "Safely read the TM:PE assembly version at runtime and gate your API calls to avoid errors on older or incompatible installations of the mod."
+---
+
+TM:PE's assembly version is the most reliable way to determine which features and API surfaces are available at runtime. Because TM:PE changed its versioning scheme between 11.0 and 11.1, you need to handle both ranges correctly before calling any manager interface. This page explains the numbering scheme, shows the canonical detection code, and describes when to apply version guards in your mod.
+
+## Version numbering scheme
+
+TM:PE uses a four-part assembly version in the form `M.m.b.*` (Major, minor, build, revision) starting from version 11.1.0. Before that release, all 11.0.x builds reported `1.0.*.*` regardless of their display version, so you cannot distinguish between individual 11.0.x releases through the assembly alone.
+
+| TM:PE release | Assembly version |
+|---|---|
+| 10.x and earlier | `1.0.*.*` |
+| 11.0.x | `1.0.*.*` |
+| 11.1.0 and above | `11.1.0.*` (M.m.b.* — matches the display version) |
+
+<Note>
+  The **display version** shown in the mod's workshop page or UI can differ from the **assembly version** returned by `GetName().Version`. Always use the assembly version for programmatic checks — never parse a display string.
+</Note>
+
+## Detection code
+
+Use `Assembly.Load` to read the TM:PE assembly version without creating a hard compile-time dependency on TM:PE:
+
+```csharp
+using System;
+using System.Reflection;
+
+Version TMPE_Version = Assembly.Load("TrafficManager").GetName().Version;
+
+if (TMPE_Version < new Version(11)) {
+    // Version 11.0 and earlier all had assembly version 1.0.*.*
+    // You cannot distinguish between individual 11.0.x builds here.
+} else if (TMPE_Version >= new Version(11, 1, 0)) {
+    // Version 11.1.0 and above have reliable assembly versions in the form M.m.b.*
+    var factory = Implementations.ManagerFactory;
+    // use factory...
+}
+```
+
+<Warning>
+  Wrap `Assembly.Load("TrafficManager")` in a `try/catch` block if TM:PE might not be installed. The call throws when the assembly cannot be found.
+</Warning>
+
+## Checking for a specific minimum version
+
+If your mod requires a feature introduced in a particular TM:PE release, compare against the exact version:
+
+```csharp
+using System;
+using System.Reflection;
+using TrafficManager.API;
+
+try {
+    Version tmpe = Assembly.Load("TrafficManager").GetName().Version;
+
+    // Require at least TM:PE 11.1.0
+    if (tmpe >= new Version(11, 1, 0)) {
+        // Safe to call manager APIs
+        var speedLimits = Implementations.ManagerFactory.SpeedLimitManager;
+        float limit = speedLimits.GetGameSpeedLimit(laneId, laneInfo);
+    } else {
+        // TM:PE is too old — disable integration gracefully
+        LogWarning("TM:PE 11.1.0 or newer is required for speed limit integration.");
+    }
+} catch (Exception) {
+    // TM:PE is not installed — skip integration entirely
+}
+```
+
+## When to run the version check
+
+<Tip>
+  Run the version check inside your level-loaded callback, not at mod startup. TM:PE loads its implementations after Cities: Skylines raises the level-loaded event, so `Implementations.ManagerFactory` is not ready during `IUserMod.OnEnabled` or static constructors.
+</Tip>
+
+A typical pattern using TM:PE's own `INotifier`:
+
+```csharp
+using TrafficManager.API;
+using TrafficManager.API.Notifier;
+
+// Subscribe during OnEnabled or level load
+INotifier notifier = Implementations.Notifier;
+notifier.EventLevelLoaded += OnLevelLoaded;
+
+private void OnLevelLoaded() {
+    Version tmpe = Assembly.Load("TrafficManager").GetName().Version;
+    if (tmpe >= new Version(11, 1, 0)) {
+        InitializeTmpeIntegration(Implementations.ManagerFactory);
+    }
+}
+```
+
+## Summary
+
+<Steps>
+  <Step title="Wrap in a try/catch">
+    `Assembly.Load("TrafficManager")` throws if TM:PE is not installed. Catch the exception and disable your integration gracefully.
+  </Step>
+  <Step title="Compare the assembly version">
+    Use `new Version(11, 1, 0)` as the minimum threshold for a reliable assembly version. Treat anything below `new Version(11)` as an indistinguishable legacy build.
+  </Step>
+  <Step title="Run the check after level load">
+    Never access `Implementations.ManagerFactory` before TM:PE has fully loaded. Use the level-loaded event or TM:PE's `INotifier.EventLevelLoaded`.
+  </Step>
+  <Step title="Gate every API call">
+    Cache the result of your version check and guard all manager calls behind it, so your mod degrades gracefully when TM:PE is absent or out of date.
+  </Step>
+</Steps>
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="API overview" icon="rocket" href="/dev/api-overview">
+    Reference the TMPE.API assembly and access your first manager.
+  </Card>
+  <Card title="Manager interfaces reference" icon="book-open" href="/dev/api-managers">
+    Full method signatures and usage examples for every documented manager.
+  </Card>
+</CardGroup>

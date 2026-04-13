@@ -1,0 +1,68 @@
+---
+title: "Speed limits: set custom road speed limits in TM:PE"
+description: "Override the default speed limit on any road segment or individual lane. Supports km/h and mph, per-segment and per-lane editing, and road-type defaults."
+---
+
+The Speed Limits tool lets you set custom speed limits on roads in your city, overriding the default values that come with each road type. You can work at the segment level to paint an entire road section with one click, drill down to individual lanes for asymmetric limits, or edit the default limit for a road category so that all newly placed roads of that type inherit your preferred value.
+
+<Steps>
+  <Step title="Open the Speed Limits tool">
+    Click the **Speed Limits** button in the TM:PE main menu toolbar. A palette panel appears showing speed limit values in your chosen unit (km/h or mph).
+  </Step>
+  <Step title="Choose a speed value from the palette">
+    Click a speed button on the palette to select that limit. The selected button highlights and a tooltip near your cursor confirms the active value. Special buttons at the top of the palette let you select **Unlimited** (no cap) or **Default** (reset to road-type default).
+
+    <Tip>
+      Use the keyboard shortcuts bound to **Increase selected speed** and **Decrease selected speed** (configurable in Options → Keybinds) to step through palette values without moving your mouse.
+    </Tip>
+  </Step>
+  <Step title="Click road segments to apply the limit">
+    Hover over any road. The segment under your cursor highlights in blue. Click to apply the selected speed limit to that segment. Speed limit signs appear on the road showing the new value.
+
+    <Note>
+      Hold **Shift** while clicking to apply the limit to the entire road between two junctions in one action — useful for long arterials.
+    </Note>
+  </Step>
+  <Step title="Switch between segment mode and lane mode">
+    The toolbar above the palette has three mode buttons:
+
+    - **Segment mode** (default) — one limit applies to the whole segment in both directions.
+    - **Lane mode** — each lane gets its own limit sign; click individual lane signs to set per-lane limits.
+    - **Defaults mode** — edits the default limit for the road type rather than overriding specific segments.
+
+    You can also hold **Ctrl** to temporarily toggle between segment and lane mode without switching the toolbar.
+  </Step>
+  <Step title="Toggle km/h vs mph">
+    Click the **mph/km/h** toggle button in the palette panel. The palette redraws with equivalent values in the other unit. Your saved limits remain consistent regardless of the display unit.
+  </Step>
+  <Step title="Exit the tool">
+    Right-click anywhere on the map, or click the Speed Limits button again to deactivate the tool.
+  </Step>
+</Steps>
+
+<AccordionGroup>
+  <Accordion title="Keyboard modifiers summary">
+    | Modifier | Effect |
+    |---|---|
+    | Hold **Shift** | Apply limit to entire road between two junctions |
+    | Hold **Ctrl** | Temporarily toggle between segment and lane display |
+    | Hold **Alt** | Temporarily show default speed limits while in override mode (or vice versa) |
+    | Page Up / Page Down | Show underground road layers |
+  </Accordion>
+
+  <Accordion title="Speed limit modes explained">
+    **Segment override** — replaces the limit only on that specific segment. Other segments of the same road type keep their defaults.
+
+    **Lane override** — replaces the limit on a single lane. Useful when a bus lane or slow lane should have a different cap than adjacent lanes.
+
+    **Segment/lane default** — changes the baseline limit for the road category. New segments of that type use this value, and existing segments without an override also display it.
+  </Accordion>
+
+  <Accordion title="What happens when you reset">
+    Selecting the **Default** palette button and clicking a segment removes any override, restoring the road-type default. Switching to **Defaults mode** and clicking a road type reverts to the game's built-in value for that category. Resetting does not affect other tools or saved junction data.
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+  Speed limit overrides are saved with your city. If you remove TM:PE or disable the mod, roads revert to their vanilla default limits. Any overrides you set are lost if the segment is demolished and rebuilt.
+</Note>

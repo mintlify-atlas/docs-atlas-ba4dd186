@@ -1,0 +1,69 @@
+---
+title: "Install TM:PE in Cities: Skylines"
+description: "Install TM:PE via Steam Workshop in a few clicks, or manually deploy the binary release if you own Cities: Skylines outside of Steam."
+---
+
+TM:PE offers two installation paths: Steam Workshop (recommended for most players) and a manual binary install for non-Steam copies of the game. Both methods end with the same step — enabling the mod in the in-game Content Manager. The team only supports the latest version of TM:PE, so make sure you do not subscribe to or install an older release alongside the current one.
+
+## Steam Workshop installation
+
+The Workshop version handles updates automatically. There are two channels to choose from:
+
+- **STABLE** (`id=1637663252`) — fully tested releases, recommended for most players
+- **TEST** (`id=2489276785`) — latest pre-release builds with new features that are still being validated
+
+<Steps>
+  <Step title="Choose your release channel">
+    Decide whether you want the [STABLE](https://steamcommunity.com/sharedfiles/filedetails/?id=1637663252) or [TEST](https://steamcommunity.com/sharedfiles/filedetails/?id=2489276785) version. If you are unsure, subscribe to STABLE.
+  </Step>
+  <Step title="Subscribe on Steam Workshop">
+    Open the Workshop page for your chosen channel and click the green **Subscribe** button. Steam will download the mod files automatically.
+  </Step>
+  <Step title="Launch Cities: Skylines">
+    Start the game. Steam will finish any pending downloads before the main menu appears.
+  </Step>
+  <Step title="Enable TM:PE in Content Manager">
+    From the main menu, go to **Content Manager → Mods**. Find **TM:PE** in the list and toggle it on. The mod activates automatically whenever you load a city.
+  </Step>
+</Steps>
+
+<Note>
+  Do not subscribe to both STABLE and TEST at the same time. Having two versions of TM:PE active simultaneously will cause conflicts and is not supported.
+</Note>
+
+## Manual (non-Steam) installation
+
+If you purchased Cities: Skylines through EA Origin or another non-Steam source, download and install the binary release manually.
+
+<Steps>
+  <Step title="Download the binary release">
+    Go to the [GitHub Releases page](https://github.com/CitiesSkylinesMods/TMPE/releases) and download the latest `.zip` archive from the Assets section of the most recent release.
+  </Step>
+  <Step title="Locate the local mods folder">
+    Find the Cities: Skylines local mods directory on your system:
+
+    - **Windows:** `%LOCALAPPDATA%\Colossal Order\Cities_Skylines\Addons\Mods\`
+    - **Mac:** `~/Library/Application Support/Colossal Order/Cities_Skylines/Addons/Mods/`
+    - **Linux:** `~/.local/share/Colossal Order/Cities_Skylines/Addons/Mods/`
+  </Step>
+  <Step title="Extract the archive">
+    Create a new folder named `TrafficManager` inside the `Mods` directory, then extract the contents of the downloaded `.zip` into it. The result should look like:
+
+    ```text
+    Mods/
+    └── TrafficManager/
+        └── TrafficManager.dll
+    ```
+  </Step>
+  <Step title="Enable TM:PE in Content Manager">
+    Launch Cities: Skylines, open **Content Manager → Mods**, locate **TM:PE** in the list, and toggle it on.
+  </Step>
+</Steps>
+
+## Support policy
+
+<Warning>
+  The team only provides support for the **latest version** of TM:PE v11 STABLE or TM:PE v11 TEST running on a genuine, up-to-date copy of Cities: Skylines. Support requests for older mod versions, pirated copies of the game, or cracked installs will not be answered.
+</Warning>
+
+If you run into trouble after installing, consult the [Troubleshooting Guide](https://github.com/CitiesSkylinesMods/TMPE/wiki/Troubleshooting) or ask in the [Discord community](https://discord.gg/faKUnST). When reporting a bug, follow the [Report a Bug](https://github.com/CitiesSkylinesMods/TMPE/wiki/Report-a-Bug) guide so the team has the information needed to help you.

@@ -1,0 +1,82 @@
+---
+title: "Keyboard shortcuts and keybinds in TM:PE"
+description: "A full reference of every configurable keyboard shortcut in TM:PE, how bindings are stored, and how to change them in the mod options panel."
+---
+
+TM:PE adds its own keyboard shortcuts for opening tools and performing in-tool actions. All bindings are stored in a separate file called `TMPE_Keybinds.xml` (located alongside `TMPE_GlobalConfig.xml` in your Cities: Skylines application data folder), which means they persist across all cities and are independent of your savegames.
+
+You change keybinds in the **Keybinds** tab of the TM:PE mod options panel. Each entry shows the action name alongside one or two buttons. Click a button and press the key combination you want to assign. Click the same button again (or press **Escape**) to cancel without saving.
+
+<Note>
+Some entries show as read-only text rather than clickable buttons. These bindings are inherited from Cities: Skylines itself (such as the elevation-up/down keys) and must be changed in the base game's key-mapping screen.
+</Note>
+
+## How to change a keybind
+
+<Steps>
+  <Step title="Open the mod options panel">
+    From the Cities: Skylines main menu or in-game, go to **Options** and select **Traffic Manager: President Edition** from the left sidebar.
+  </Step>
+  <Step title="Select the Keybinds tab">
+    Click the **Keybinds** tab at the top of the TM:PE options panel.
+  </Step>
+  <Step title="Click the key button you want to change">
+    Find the action in the list below and click its key button. The button label changes to indicate it is listening for input.
+  </Step>
+  <Step title="Press your new key combination">
+    Press the key (optionally with Ctrl, Shift, or Alt) you want to use. The binding saves immediately.
+  </Step>
+  <Step title="Resolve conflicts if prompted">
+    If the new binding conflicts with another TM:PE shortcut, a warning appears. Reassign the conflicting action or choose a different key.
+  </Step>
+</Steps>
+
+## Keybind reference
+
+<AccordionGroup>
+
+  <Accordion title="Global shortcuts">
+    These shortcuts work at any time while TM:PE is active, regardless of which tool is open.
+
+    | Action | Default binding | Editable | Notes |
+    |---|---|---|---|
+    | Exit current tool / subtool | `Escape` | No | Standard Cities: Skylines behaviour. |
+    | Cancel with right-click | `Right Mouse Button` | No | Standard Cities: Skylines behaviour. |
+    | Overground view | Game default | No | Controlled by the base game key-mapping. |
+    | Underground view | Game default | No | Controlled by the base game key-mapping. |
+    | Toggle TM:PE main menu | `Shift + ;` | Yes | Opens or closes the floating TM:PE toolbar. |
+    | Toggle traffic lights tool | *(unbound)* | Yes | Directly activates the Traffic Lights tool. |
+    | Lane arrow tool | *(unbound)* | Yes | Directly activates the Lane Arrows tool. |
+    | Lane connections tool | *(unbound)* | Yes | Directly activates the Lane Connector tool. |
+    | Priority signs tool | *(unbound)* | Yes | Directly activates the Priority Signs tool. |
+    | Junction restrictions tool | *(unbound)* | Yes | Directly activates the Junction Restrictions tool. |
+    | Speed limits tool | *(unbound)* | Yes | Directly activates the Speed Limits tool. |
+  </Accordion>
+
+  <Accordion title="Lane Connector tool shortcuts">
+    These shortcuts are active only while the Lane Connector tool is open.
+
+    | Action | Default binding | Alternate | Editable | Notes |
+    |---|---|---|---|---|
+    | Stay in lane | `Ctrl + S` | — | Yes | Connects all lanes of a segment to the same lane on the next segment, keeping vehicles in their current lane. |
+    | Delete lane connections | `Delete` | `Backspace` | Partial | `Delete` is read-only (fixed). `Backspace` is editable. Removes the selected lane connection. |
+  </Accordion>
+
+  <Accordion title="Speed Limits tool shortcuts">
+    These shortcuts are active only while the Speed Limits tool is open.
+
+    | Action | Default binding | Alternate | Editable |
+    |---|---|---|---|
+    | Decrease selected speed limit | `-` (minus) | `Numpad -` | Yes (both) |
+    | Increase selected speed limit | `=` (equals / plus) | `Numpad +` | Yes (both) |
+  </Accordion>
+
+</AccordionGroup>
+
+## Keybind storage
+
+Bindings are saved to `TMPE_Keybinds.xml` automatically when you make a change in the options panel. The file uses the Cities: Skylines `SettingsFile` mechanism (`GameSettings`), so it follows the same path conventions as other mod config files. You do not need to restart the game for new bindings to take effect.
+
+<Tip>
+To reset all TM:PE keybinds to their defaults, delete `TMPE_Keybinds.xml` from your application data folder and restart the game. TM:PE will recreate the file with default values.
+</Tip>

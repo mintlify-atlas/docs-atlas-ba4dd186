@@ -1,0 +1,120 @@
+---
+title: "Traffic lights: toggle and program intersections"
+description: "Add, remove, or program traffic lights at road junctions. Supports simple on/off toggling, manual phase control, and fully programmable timed light sequences."
+---
+
+TM:PE provides two separate traffic light tools: **Toggle Traffic Lights** quickly adds or removes a traffic light at any eligible junction, while **Timed Traffic Lights** lets you program multi-step sequences with custom phase durations and adaptive timing based on traffic flow. Manual Traffic Lights offer an intermediate option where you directly set the state of each signal head for fine-grained, hands-on control.
+
+## Toggle traffic lights
+
+Use this mode when you simply want to add a vanilla traffic light to a junction that doesn't have one, or remove an unwanted light from an intersection.
+
+<Steps>
+  <Step title="Select the Toggle Traffic Lights tool">
+    Click the traffic light (simple) button in the TM:PE toolbar. Traffic light icons appear at all eligible junctions — a green lit icon means a traffic light is active, a dark icon means the junction has no light.
+  </Step>
+  <Step title="Click a junction to toggle">
+    Click any junction node to switch its traffic light on or off. The icon updates immediately to reflect the new state.
+
+    <Warning>
+      You cannot toggle a junction that already has a manually configured or timed traffic light program. Remove the program first using the Timed Traffic Lights tool if you want to revert to a simple light or remove it entirely.
+    </Warning>
+  </Step>
+  <Step title="Exit">
+    Right-click or click the button again to exit the tool.
+  </Step>
+</Steps>
+
+<Note>
+  Toggling a traffic light off also removes any priority signs at that junction, since priority signs and traffic lights are mutually exclusive.
+</Note>
+
+---
+
+## Manual traffic lights
+
+Manual mode lets you click directly on individual signal heads at a junction to cycle them through red, amber, and green states.
+
+<Steps>
+  <Step title="Select the Manual Traffic Lights tool">
+    Click the manual traffic lights button (the signal with a hand icon) in the TM:PE toolbar.
+  </Step>
+  <Step title="Click a junction to open the manual panel">
+    Click any junction that has (or can have) a traffic light. If the junction has no light, TM:PE adds one automatically. A signal-state panel appears at the junction showing each signal head.
+  </Step>
+  <Step title="Click signal heads to change their state">
+    Click any signal icon in the panel to cycle it through green, amber, and red. Changes take effect immediately and affect all vehicles approaching that arm of the junction.
+  </Step>
+  <Step title="Exit the junction">
+    Right-click to deselect the junction and return to selection mode. Right-click again to exit the tool.
+  </Step>
+</Steps>
+
+---
+
+## Timed traffic lights
+
+Timed traffic lights let you program a repeating sequence of phases. Each phase defines the state of every signal at the junction and how long that phase lasts, with optional minimum and maximum durations driven by real-time traffic flow.
+
+<Steps>
+  <Step title="Select the Timed Traffic Lights tool">
+    Click the timed traffic lights button (the signal with a clock) in the TM:PE toolbar.
+  </Step>
+  <Step title="Select the junction nodes for your program">
+    Click one or more junction nodes to include them in the program. Selected nodes highlight. Including multiple nodes is useful for synchronized signals along a corridor. Click **Start** in the panel when your selection is complete.
+  </Step>
+  <Step title="Add phases (steps)">
+    Click **Add step** in the timed light control panel. A new phase row appears. For each phase:
+    - Click signal icons on the map to set each arm's state (green / amber / red).
+    - Set the **minimum duration** (seconds the phase holds regardless of traffic).
+    - Set the **maximum duration** (the phase can extend up to this long if flow demands it).
+
+    Repeat to add as many phases as you need.
+
+    <Tip>
+      Set minimum duration equal to maximum duration for a fixed-time signal. Use different min/max values to enable adaptive timing: the phase extends when vehicles are still flowing, and advances early when the detector sees no traffic.
+    </Tip>
+  </Step>
+  <Step title="Configure the flow/wait sensitivity (optional)">
+    The **Flow-to-wait ratio** slider controls how aggressively the adaptive timer extends a phase. A higher ratio favors flow (keeps green longer when traffic is moving). A lower ratio favors minimizing wait (advances sooner even if flow is present).
+  </Step>
+  <Step title="Start the program">
+    Click **Start** to activate the timed program. The junction runs through your phases in order, looping continuously. A phase counter displays the current step number above the junction.
+  </Step>
+  <Step title="Edit a running program">
+    Click **Edit** to pause the program and return to the phase editor. You can add, remove, or reorder steps. Click **Start** again to resume.
+  </Step>
+  <Step title="Copy a program to another junction">
+    With a program running, click **Copy**, then click another eligible junction to paste the same phase sequence there. The copied program is independent and can be adjusted separately.
+  </Step>
+  <Step title="Test mode">
+    Enable **Test mode** to step through phases manually using the forward/backward buttons, letting you verify every phase before activating live traffic.
+  </Step>
+</Steps>
+
+<AccordionGroup>
+  <Accordion title="Step change metrics">
+    Each step (phase) can use one of several metrics to decide when to advance:
+
+    | Metric | Behavior |
+    |---|---|
+    | **Default** | Uses the global flow-to-wait ratio setting |
+    | **No change** | Phase runs for exactly the set duration, ignoring traffic |
+    | **Min/max by vehicles** | Extends phase based on vehicle count at the junction |
+    | **Min/max by flow** | Extends phase based on vehicle flow rate |
+  </Accordion>
+
+  <Accordion title="Synchronized multi-node programs">
+    When you select multiple nodes before starting, all included junctions share a single phase sequence and step in sync. This is ideal for green-wave corridors on a main road. Each junction in the group shows the same phase counter.
+  </Accordion>
+
+  <Accordion title="Restrictions">
+    - Level crossings cannot have traffic light programs.
+    - A junction already running a timed program cannot be switched to manual mode — stop and delete the timed program first.
+    - Priority signs are automatically removed from a junction when a traffic light program is added.
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+  Traffic light programs are saved with the city. If TM:PE is removed, junctions that had programs revert to vanilla traffic light behavior (or no light if the junction had none originally). All programmed phase data is lost.
+</Note>

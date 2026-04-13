@@ -1,0 +1,94 @@
+---
+title: "Junction restrictions: fine-tune intersection behavior"
+description: "Control u-turns, turn-on-red, lane changing, blocked-junction entry, and pedestrian crossings at individual junctions for precise traffic rule customization."
+---
+
+The Junction Restrictions tool lets you enable or disable six individual traffic behaviors at each approach of a junction. Rather than changing road layout or adding signals, you adjust the rules directly — for example, forbidding u-turns on a busy arterial, allowing right-turn-on-red where the geometry is safe, or preventing pedestrians from crossing a high-speed slip lane. Each restriction is toggled per segment end (one direction of one road at one node).
+
+<Steps>
+  <Step title="Activate the Junction Restrictions tool">
+    Click the **Junction Restrictions** button in the TM:PE main menu. Small icon overlays appear at every junction that already has custom restrictions set. Junctions with no customization show nothing until selected.
+  </Step>
+  <Step title="Click a junction node to edit it">
+    Click any junction node (or a junction bend) on the map. The node highlights and restriction icons appear on each road approach connected to that node. Each icon represents one configurable rule for that direction.
+  </Step>
+  <Step title="Click an icon to toggle a restriction">
+    Click any restriction icon to toggle it on or off. A green/active icon means the behavior is permitted; a red/inactive icon means it is prohibited. The change takes effect immediately.
+  </Step>
+  <Step title="Reset to defaults">
+    Press the **Restore Defaults** key (default **Delete**, configurable in Options → Keybinds) to clear all custom rules at the selected junction and let the game decide the defaults.
+  </Step>
+  <Step title="Exit the tool">
+    Right-click to deselect the current junction and return to selection mode. Right-click again (or click the button) to exit the tool.
+  </Step>
+</Steps>
+
+The six configurable restrictions are described in detail below.
+
+<AccordionGroup>
+  <Accordion title="U-turns">
+    **What it controls:** Whether vehicles approaching this junction from this road may make a 180-degree turn and return the way they came.
+
+    **Default behavior:** U-turns are generally allowed by default on roads that have enough width, and disallowed on narrow roads or at specific node types.
+
+    **When to change it:**
+    - Disable u-turns on high-speed roads or roads with medians where a u-turn would be unsafe or unrealistic.
+    - Enable u-turns at a dead end or cul-de-sac if the game does not permit it by default.
+
+    <Note>
+      If Lane Connectors are configured at the junction, u-turn availability is controlled by whether a connection from a lane back to itself (or to an opposing lane) exists. The junction restriction icon may not be configurable in that case.
+    </Note>
+  </Accordion>
+
+  <Accordion title="Turn on red — near turn">
+    **What it controls:** Whether vehicles at a red light may turn toward the nearest available road (typically a right turn in right-hand traffic, left in left-hand traffic) without waiting for green.
+
+    **Default behavior:** Near-turn-on-red is disabled by default and must be explicitly enabled.
+
+    **When to enable it:** At T-junctions or four-way intersections where the near-side slip lane has good visibility and there is no pedestrian crossing conflict. This reduces queue length on the turning approach without requiring a dedicated green phase.
+
+    <Warning>
+      Enabling turn-on-red increases the risk of conflicts with pedestrians crossing in the same direction. Consider also configuring the pedestrian crossing restriction below.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="Turn on red — far turn">
+    **What it controls:** Whether vehicles at a red light may turn across oncoming traffic toward the far road (typically a left turn in right-hand traffic, right in left-hand traffic).
+
+    **Default behavior:** Far-turn-on-red is disabled by default.
+
+    **When to enable it:** Use with caution. Far turns cross oncoming lanes and are generally only safe when there is a dedicated protected phase, low traffic volume, or a physical median forcing a short crossing. Enabling this at a busy junction will cause frequent conflicts.
+  </Accordion>
+
+  <Accordion title="Lane changing when going straight">
+    **What it controls:** Whether vehicles traveling straight through the junction may change lanes as they cross the intersection.
+
+    **Default behavior:** Lane changing while going straight is allowed by default at junctions.
+
+    **When to disable it:** At intersections where you want strict lane discipline — for example, where you have drawn explicit Lane Connector paths and do not want vehicles deviating from them, or on high-speed roads where late lane changes cause weaving and collisions.
+  </Accordion>
+
+  <Accordion title="Entering blocked junctions">
+    **What it controls:** Whether vehicles may enter the junction box when the exit is already blocked by queued traffic (the "don't block the box" rule).
+
+    **Default behavior:** Vehicles are allowed to enter blocked junctions by default.
+
+    **When to disable it:** At busy city-center junctions where gridlock is a recurring problem. Disabling entry to blocked junctions forces vehicles to wait before the stop line until there is clear space on the other side, preventing the junction from locking up. This is the in-game equivalent of a "keep clear" box marking.
+
+    <Tip>
+      This is one of the most effective single-junction tweaks for preventing gridlock in dense grids. Apply it to a whole block of intersections using the junction restrictions overlay (enable it in TM:PE Options → Overlays).
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Pedestrian crossings">
+    **What it controls:** Whether pedestrians may cross the road at this segment end of the junction.
+
+    **Default behavior:** Pedestrian crossings are allowed by default wherever the game generates crossing geometry.
+
+    **When to disable it:** On slip lanes, highway on-ramps, or high-speed approaches where pedestrian crossings are unrealistic. Disabling the crossing removes the pedestrian phase from the signal cycle (if a traffic light is present), reducing cycle time and improving vehicle throughput at the cost of pedestrian access.
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+  Junction restriction settings are saved with the city. If TM:PE is removed, all junctions revert to the game's built-in defaults for every rule. Custom restrictions are also cleared if you demolish the road segment or the junction node.
+</Note>
